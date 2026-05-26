@@ -11,7 +11,7 @@
     
     <!-- Android PWA全屏配置 -->
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#1a1a2e">
+    <meta name="theme-color" content="#000000">
     <meta name="application-name" content="小兔板栗">
     
     <!-- iOS图标（不带查询参数，不带sizes，让iOS自动选择） -->
@@ -26,6 +26,42 @@
     <link rel="shortcut icon" type="image/png" href="icon.png">
     
     <style>
+
+        /* ========== iOS Safari 黑屏修复 ========== */
+        
+        /* iOS Safari 100vh修复 - 使用CSS变量 */
+        :root {
+            --vh: 1vh;
+            --vw: 1vw;
+        }
+        
+        /* iOS特定修复 */
+        @supports (-webkit-touch-callout: none) {
+            :root {
+                --vh: calc(100vh / 100);
+            }
+            
+            html, body {
+                min-height: 100vh;
+                min-height: calc(var(--vh, 1vh) * 100);
+            }
+            
+            .phone-container {
+                min-height: 100vh;
+                min-height: calc(var(--vh, 1vh) * 100);
+            }
+        }
+        
+        /* iOS PWA模式下确保内容可见 */
+        @supports (padding: max(0px)) {
+            body {
+                padding-top: max(0px, env(safe-area-inset-top));
+                padding-bottom: max(0px, env(safe-area-inset-bottom));
+                padding-left: max(0px, env(safe-area-inset-left));
+                padding-right: max(0px, env(safe-area-inset-right));
+            }
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -49,16 +85,26 @@
         html {
             width: 100%;
             height: 100%;
+            min-height: 100%;
             overflow: hidden;
+            /* iOS Safari修复 */
+            -webkit-text-size-adjust: 100%;
+            background: #000;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #000;
+            /* 浏览器模式：显示渐变背景 */
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             width: 100vw;
+            width: calc(var(--vw, 1vw) * 100);
             height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
             height: 100dvh;
             height: -webkit-fill-available;
+            min-height: 100vh;
+            min-height: calc(var(--vh, 1vh) * 100);
+            min-height: -webkit-fill-available;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -70,84 +116,88 @@
             left: 0;
             right: 0;
             bottom: 0;
+            /* iOS渲染优化 */
+            -webkit-overflow-scrolling: touch;
+            transform: translateZ(0);
+        }
+        
+        /* PWA全屏模式下body背景改为黑色 */
+        @media all and (display-mode: standalone) {
+            body {
+                background: #000 !important;
+            }
         }
 
-        /* PWA全屏模式下的body样式 - 彻底全屏 */
+        
+        
+        
+
+        /* 手机外壳 - 浏览器模式显示手机样式 */
+        .phone-container {
+            width: 360px;
+            height: 720px;
+            background: #000;
+            border-radius: 44px;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 0 2px #333, 0 20px 60px rgba(0,0,0,0.5);
+            max-width: 100vw;
+            max-height: 100vh;
+            /* iOS渲染优化 */
+            transform: translateZ(0);
+            will-change: transform;
+        }
+        
+        /* PWA全屏模式下手机外壳全屏 */
         @media all and (display-mode: standalone) {
-            html, body {
-                width: 100%;
-                height: 100%;
-                padding: 0;
-                margin: 0;
-                overflow: hidden;
-                background: #000;
-            }
             .phone-container {
                 width: 100vw !important;
+                width: calc(var(--vw, 1vw) * 100) !important;
                 height: 100vh !important;
+                height: calc(var(--vh, 1vh) * 100) !important;
                 height: 100dvh !important;
                 height: -webkit-fill-available !important;
+                min-height: 100vh !important;
+                min-height: calc(var(--vh, 1vh) * 100) !important;
+                min-height: -webkit-fill-available !important;
                 border-radius: 0 !important;
                 box-shadow: none !important;
                 max-width: none !important;
                 max-height: none !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
             }
-            .screen {
-                border-radius: 0 !important;
-            }
-        }
-        
-        /* 全屏模式 - 适用于所有情况 */
-        .fullscreen-mode .phone-container {
-            width: 100vw !important;
-            height: 100vh !important;
-            height: 100dvh !important;
-            height: -webkit-fill-available !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            max-width: none !important;
-            max-height: none !important;
-        }
-        
-        .fullscreen-mode .screen {
-            border-radius: 0 !important;
-        }
-        
-        .fullscreen-mode body {
-            background: #000;
         }
 
-        /* 手机外壳 - 全屏适配 */
-        .phone-container {
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            height: -webkit-fill-available;
-            background: #000;
-            border-radius: 0;
-            padding: 0;
-            position: relative;
-            overflow: hidden;
-            box-shadow: none;
-            max-width: none;
-            max-height: none;
-        }
-
-        /* 屏幕 - 全屏适配 */
+        /* 屏幕 - 浏览器模式有圆角 */
         .screen {
             width: 100%;
             height: 100%;
             background: #000;
-            border-radius: 0;
+            border-radius: 40px;
             overflow: hidden;
             position: relative;
+            /* iOS渲染优化 */
+            transform: translateZ(0);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* PWA全屏模式下屏幕无圆角 */
+        @media all and (display-mode: standalone) {
+            .screen {
+                border-radius: 0 !important;
+            }
         }
 
-        /* 锁屏界面 */
+        /* 锁屏界面 - iOS修复确保背景可见 */
         .lock-screen {
             width: 100%;
             height: 100%;
-            background-color: #f2f2f7;
+            min-height: 100%;
+            /* 确保背景色始终可见 */
+            background-color: #f2f2f7 !important;
             background-image: url('https://img.heliar.top/file/1779120852728_IMG_2309.png');
             background-position: center center;
             background-size: cover;
@@ -7387,6 +7437,42 @@
                         console.log('Service Worker registration failed:', error);
                     });
             });
+        }
+    </script>
+
+    <!-- iOS Safari 黑屏修复 JavaScript -->
+    <script>
+        // iOS Safari 100vh修复
+        function fixIOSViewport() {
+            var vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', vh + 'px');
+            var vw = window.innerWidth * 0.01;
+            document.documentElement.style.setProperty('--vw', vw + 'px');
+        }
+        
+        // 初始化
+        fixIOSViewport();
+        
+        // 监听resize事件
+        window.addEventListener('resize', fixIOSViewport);
+        window.addEventListener('orientationchange', function() {
+            setTimeout(fixIOSViewport, 100);
+        });
+        
+        // iOS PWA启动时修复
+        window.addEventListener('load', function() {
+            fixIOSViewport();
+            // 强制重绘
+            document.body.style.opacity = '0.99';
+            setTimeout(function() {
+                document.body.style.opacity = '1';
+            }, 10);
+        });
+        
+        // 检测iOS standalone模式
+        if (window.navigator.standalone === true) {
+            document.documentElement.classList.add('ios-standalone');
+            fixIOSViewport();
         }
     </script>
 </head>
