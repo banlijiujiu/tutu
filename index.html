@@ -19,7 +19,7 @@
     <link rel="apple-touch-icon" href="icon.png">
     
     <title>小兔板栗</title>
-    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="manifest" href="manifest.webmanifest">
     
     <!-- 通用favicon -->
     <link rel="icon" type="image/png" href="icon.png">
@@ -90,15 +90,16 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: #000;
+            /* 关键：--vh变量必须放在最后，否则会被后面的值覆盖 */
             width: 100vw;
-            width: calc(var(--vw, 1vw) * 100);
             height: 100vh;
-            height: calc(var(--vh, 1vh) * 100);
             height: 100dvh;
             height: -webkit-fill-available;
+            height: calc(var(--vh, 1vh) * 100);
             min-height: 100vh;
-            min-height: calc(var(--vh, 1vh) * 100);
+            min-height: 100dvh;
             min-height: -webkit-fill-available;
+            min-height: calc(var(--vh, 1vh) * 100);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -121,14 +122,14 @@
         /* 手机容器 - 始终全屏无圆角 */
         .phone-container {
             width: 100vw;
-            width: calc(var(--vw, 1vw) * 100);
             height: 100vh;
-            height: calc(var(--vh, 1vh) * 100);
             height: 100dvh;
             height: -webkit-fill-available;
+            height: calc(var(--vh, 1vh) * 100);
             min-height: 100vh;
-            min-height: calc(var(--vh, 1vh) * 100);
+            min-height: 100dvh;
             min-height: -webkit-fill-available;
+            min-height: calc(var(--vh, 1vh) * 100);
             background: #000;
             border-radius: 0;
             padding: 0;
@@ -7419,23 +7420,56 @@
             var isDisplayModeStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
             
             if (isStandalone || isDisplayModeStandalone) {
-                // iOS用html类，确保CSS在渲染前就生效
                 document.documentElement.classList.add('ios-standalone');
             }
             
-            // iOS Safari 100vh修复
+            // iOS Safari 视口高度修复 - 使用visualViewport更准确
             function fixViewport() {
-                var vh = window.innerHeight * 0.01;
+                // 优先使用visualViewport（iOS Safari支持）
+                var height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+                var width = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+                
+                var vh = height * 0.01;
+                var vw = width * 0.01;
+                
                 document.documentElement.style.setProperty('--vh', vh + 'px');
-                var vw = window.innerWidth * 0.01;
                 document.documentElement.style.setProperty('--vw', vw + 'px');
+                
+                // 强制更新容器高度
+                var container = document.querySelector('.phone-container');
+                if (container) {
+                    container.style.height = height + 'px';
+                }
             }
             
+            // 立即执行
             fixViewport();
+            
+            // 监听多种事件确保及时更新
             window.addEventListener('resize', fixViewport);
             window.addEventListener('orientationchange', function() {
                 setTimeout(fixViewport, 100);
+                setTimeout(fixViewport, 300);
             });
+            
+            // iOS visualViewport变化监听（关键！）
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', fixViewport);
+                window.visualViewport.addEventListener('scroll', fixViewport);
+            }
+            
+            // 页面加载完成后再次修复
+            window.addEventListener('load', function() {
+                fixViewport();
+                setTimeout(fixViewport, 100);
+                setTimeout(fixViewport, 500);
+            });
+            
+            // iOS PWA特殊处理
+            if (isStandalone) {
+                fixViewport();
+                setTimeout(fixViewport, 100);
+            }
         })();
     </script>
 </head>
