@@ -58,8 +58,15 @@
         /* iOS standalone模式 - 消除顶部白条 */
         @supports (padding-top: env(safe-area-inset-top)) {
             .phone-container {
-                padding-top: env(safe-area-inset-top);
-                margin-top: calc(-1 * env(safe-area-inset-top));
+                padding-top: 0;
+                margin-top: 0;
+            }
+            
+            /* 锁屏界面延伸到状态栏 */
+            .lock-screen {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+                top: 0 !important;
             }
         }
         
@@ -160,8 +167,9 @@
 
         /* 屏幕 - 始终无圆角全屏 */
         .screen {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
             background: #000;
             border-radius: 0;
             overflow: hidden;
@@ -170,16 +178,19 @@
             left: 0;
             right: 0;
             bottom: 0;
+            padding: 0;
+            margin: 0;
             transform: translateZ(0);
             -webkit-overflow-scrolling: touch;
         }
 
-        /* 锁屏界面 - 填满整个屏幕 */
+        /* 锁屏界面 - 填满整个屏幕包括状态栏 */
         .lock-screen {
-            width: 100%;
-            height: 100%;
-            min-height: 100%;
-            max-height: 100%;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            min-height: 100vh;
+            min-height: 100dvh;
             background-color: #f2f2f7;
             background-image: url('https://img.heliar.top/file/1779860853179_IMG_2637.jpeg');
             background-position: center center;
@@ -189,13 +200,15 @@
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             z-index: 200;
             transition: opacity 0.4s ease;
+            padding: 0;
+            margin: 0;
             will-change: opacity;
             overflow: hidden;
             box-sizing: border-box;
@@ -7241,6 +7254,13 @@
             border-top: 0.5px solid #ECECEC;
             flex-shrink: 0;
             position: relative;
+            z-index: 10;
+        }
+        
+        /* iOS键盘弹出时输入区域适配 */
+        .wechat-chat-room.keyboard-open .wechat-chat-room-input-area {
+            position: relative;
+            bottom: 0;
         }
 
         /* +号弹出菜单 */
@@ -7513,7 +7533,7 @@
         <div class="screen">
             <!-- 锁屏界面 -->
             <div class="lock-screen" id="lockScreen">
-                <div style="display:flex;flex-direction:column;align-items:center;padding-top:calc(20px + env(safe-area-inset-top));">
+                <div style="display:flex;flex-direction:column;align-items:center;padding-top:calc(40px + env(safe-area-inset-top));">
                     <div class="lock-time" id="lockTime">12:00</div>
                     <div class="lock-date" id="lockDate">1月1日 星期一</div>
                     <div class="lock-hint">输入密码解锁</div>
@@ -11485,25 +11505,8 @@ AI应表现出"正在操作手机"的质感。所有的互动必须基于"屏幕
         })();
 
         // ========== 全局版本号配置 ==========
-        // 版本号自动递增机制：每次新访问时自动递增
-        (function autoIncrementVersion() {
-            const VERSION_KEY = 'app_version_counter';
-            const SESSION_KEY = 'app_version_session';
-            
-            // 检查是否是新会话（页面被重新加载/更新）
-            if (!sessionStorage.getItem(SESSION_KEY)) {
-                // 新会话，递增版本号
-                let counter = parseInt(localStorage.getItem(VERSION_KEY) || '0') + 1;
-                localStorage.setItem(VERSION_KEY, counter.toString());
-                sessionStorage.setItem(SESSION_KEY, '1');
-            }
-            
-            // 计算版本号：0.1.X 格式
-            const counter = parseInt(localStorage.getItem(VERSION_KEY) || '3');
-            window.APP_VERSION = '0.1.' + counter;
-        })();
-        
-        const APP_VERSION = window.APP_VERSION;
+        // 固定版本号为 0.1.4
+        const APP_VERSION = '0.1.4';
         
         // ========== 数据管理页面 ==========
         // 自动更新页面上的版本号显示
@@ -14511,72 +14514,71 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
         const chatRoomInput = document.getElementById('chatRoomInput');
         const chatRoomMessages = document.getElementById('chatRoomMessages');
         
-        chatRoomInput.addEventListener('focus', () => {
-            // iOS键盘弹出时，使用visualViewport调整布局
-            if (window.visualViewport) {
-                const updateLayout = () => {
-                    const viewportHeight = window.visualViewport.height;
-                    const keyboardHeight = window.innerHeight - viewportHeight;
-                    
-                    // 调整聊天页面高度，让内容区域可见
-                    const chatRoom = document.querySelector('.wechat-chat-room');
-                    if (chatRoom) {
-                        chatRoom.style.height = viewportHeight + 'px';
-                    }
-                    
-                    // 调整消息区域高度
-                    const messagesEl = document.getElementById('chatRoomMessages');
-                    if (messagesEl) {
-                        messagesEl.style.height = (viewportHeight - 120) + 'px';
-                    }
-                    
-                    // 滚动到底部
-                    setTimeout(() => {
-                        messagesEl.scrollTop = messagesEl.scrollHeight;
-                    }, 50);
-                };
-                
-                // 立即更新并监听变化
-                updateLayout();
-                window.visualViewport.addEventListener('resize', updateLayout);
-                window.visualViewport.addEventListener('scroll', updateLayout);
-                
-                // 存储监听器以便blur时移除
-                window._keyboardLayoutHandler = updateLayout;
-            } else {
-                // 非iOS设备，简单滚动
-                setTimeout(() => {
-                    chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
-                }, 300);
-            }
-        });
+        // iOS键盘适配 - 使用更可靠的方案
+        let keyboardHandler = null;
         
-        chatRoomInput.addEventListener('blur', () => {
-            // 移除visualViewport监听
-            if (window.visualViewport && window._keyboardLayoutHandler) {
-                window.visualViewport.removeEventListener('resize', window._keyboardLayoutHandler);
-                window.visualViewport.removeEventListener('scroll', window._keyboardLayoutHandler);
-                window._keyboardLayoutHandler = null;
-            }
-            
-            // 恢复聊天页面高度
+        function handleKeyboardShow() {
+            // 获取键盘高度
+            const keyboardHeight = window.innerHeight - window.visualViewport.height;
             const chatRoom = document.querySelector('.wechat-chat-room');
-            if (chatRoom) {
-                chatRoom.style.height = '100%';
-                chatRoom.style.height = '100vh';
-                chatRoom.style.height = '100dvh';
-            }
-            
+            const inputArea = document.querySelector('.wechat-chat-room-input-area');
             const messagesEl = document.getElementById('chatRoomMessages');
-            if (messagesEl) {
-                messagesEl.style.height = '';
+            
+            if (!chatRoom || !messagesEl) return;
+            
+            // 设置底部padding为键盘高度，让输入框上移
+            if (inputArea) {
+                inputArea.style.position = 'relative';
+                inputArea.style.bottom = '0';
             }
             
-            // 键盘收起时，确保布局正确
+            // 调整消息区域，确保消息可见
+            setTimeout(() => {
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+            }, 100);
+        }
+        
+        function handleKeyboardHide() {
+            const inputArea = document.querySelector('.wechat-chat-room-input-area');
+            if (inputArea) {
+                inputArea.style.position = '';
+                inputArea.style.bottom = '';
+            }
+            
+            // 恢复滚动位置
             setTimeout(() => {
                 window.scrollTo(0, 0);
                 chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
             }, 100);
+        }
+        
+        chatRoomInput.addEventListener('focus', () => {
+            // iOS键盘弹出时
+            if (window.visualViewport) {
+                // 初始处理
+                setTimeout(handleKeyboardShow, 100);
+                
+                // 监听viewport变化
+                keyboardHandler = () => {
+                    handleKeyboardShow();
+                };
+                window.visualViewport.addEventListener('resize', keyboardHandler);
+            }
+            
+            // 延迟滚动到底部
+            setTimeout(() => {
+                chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
+            }, 300);
+        });
+        
+        chatRoomInput.addEventListener('blur', () => {
+            // 移除监听
+            if (window.visualViewport && keyboardHandler) {
+                window.visualViewport.removeEventListener('resize', keyboardHandler);
+                keyboardHandler = null;
+            }
+            
+            handleKeyboardHide();
         });
 
         // 关闭引用预览
