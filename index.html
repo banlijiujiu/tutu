@@ -15,15 +15,15 @@
     <meta name="application-name" content="小兔板栗">
     
     <!-- iOS图标（不带查询参数，不带sizes，让iOS自动选择） -->
-    <link rel="apple-touch-icon-precomposed" href="https://banlijiujiu.github.io/tutu/icon.png">
-    <link rel="apple-touch-icon" href="https://banlijiujiu.github.io/tutu/icon.png">
+    <link rel="apple-touch-icon-precomposed" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
     
     <title>小兔板栗</title>
-    <link rel="manifest" href="https://banlijiujiu.github.io/tutu/manifest.webmanifest">
+    <link rel="manifest" href="manifest.webmanifest">
     
     <!-- 通用favicon -->
-    <link rel="icon" type="image/png" href="https://banlijiujiu.github.io/tutu/icon.png">
-    <link rel="shortcut icon" type="image/png" href="https://banlijiujiu.github.io/tutu/icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="shortcut icon" type="image/png" href="icon.png">
     
     <style>
 
@@ -170,7 +170,7 @@
             min-height: 100%;
             max-height: 100%;
             background-color: #f2f2f7;
-            background-image: url('https://img.heliar.top/file/1779120852728_IMG_2309.png');
+            background-image: url('https://img.heliar.top/file/1779860853179_IMG_2637.jpeg');
             background-position: center center;
             background-size: cover;
             background-repeat: no-repeat;
@@ -289,7 +289,7 @@
         .home-screen {
             width: 100%;
             height: 100%;
-            background: url('https://img.heliar.top/file/1779120931003_IMG_2311.jpeg') center center / cover no-repeat;
+            background: url('https://img.heliar.top/file/1779860882296_IMG_2448.jpeg') center center / cover no-repeat;
             display: flex;
             flex-direction: column;
             padding: 45px 15px 0 15px;
@@ -2247,7 +2247,7 @@
             border-radius: 24px;
             padding: 10px 5px;
             backdrop-filter: blur(15px);
-            margin-top: 10px;
+            margin-top: auto;
             margin-bottom: constant(safe-area-inset-bottom);
             margin-bottom: env(safe-area-inset-bottom);
         }
@@ -7321,7 +7321,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('https://banlijiujiu.github.io/tutu/service-worker.js')
+                navigator.serviceWorker.register('service-worker.js')
                     .then((registration) => {
                         console.log('Service Worker registered:', registration.scope);
                     })
@@ -7675,8 +7675,8 @@
                     <div style="height: 40px;"></div>
 
                     <!-- 版本号 -->
-                    <div style="text-align:center;padding:10px 0 30px;color:#C7C7CC;font-size:13px;">
-                        小兔板栗 v0.1.2
+                    <div id="appVersionDisplay" style="text-align:center;padding:10px 0 30px;color:#C7C7CC;font-size:13px;">
+                        小兔板栗 v<span class="version-number">0.1.2</span>
                     </div>
                 </div>
             </div>
@@ -8932,7 +8932,7 @@
                     <div class="wallpaper-section">
                         <div class="wallpaper-section-title">主屏幕壁纸</div>
                         <div class="wallpaper-preview" id="wpHomePreview">
-                            <img id="wpHomeImg" src="https://img.heliar.top/file/1779120931003_IMG_2311.jpeg" alt="主屏幕壁纸" onerror="this.style.display='none'">
+                            <img id="wpHomeImg" src="https://img.heliar.top/file/1779860882296_IMG_2448.jpeg" alt="主屏幕壁纸" onerror="this.style.display='none'">
                             <span class="wp-label">主屏幕</span>
                             <span class="wp-hint">点击更换</span>
                         </div>
@@ -8942,7 +8942,7 @@
                     <div class="wallpaper-section">
                         <div class="wallpaper-section-title">锁屏壁纸</div>
                         <div class="wallpaper-preview" id="wpLockPreview">
-                            <img id="wpLockImg" src="https://img.heliar.top/file/1779120852728_IMG_2309.png" alt="锁屏壁纸" onerror="this.style.display='none'">
+                            <img id="wpLockImg" src="https://img.heliar.top/file/1779860853179_IMG_2637.jpeg" alt="锁屏壁纸" onerror="this.style.display='none'">
                             <span class="wp-label">锁屏</span>
                             <span class="wp-hint">点击更换</span>
                         </div>
@@ -11132,6 +11132,14 @@
         })();
 
         // ========== 数据管理页面 ==========
+        // 全局版本号 - 修改这里即可更新所有版本显示
+        const APP_VERSION = '0.1.2';
+        
+        // 自动更新页面上的版本号显示
+        document.querySelectorAll('.version-number').forEach(el => {
+            el.textContent = APP_VERSION;
+        });
+        
         // 打开数据管理页面
         document.getElementById('openDataManagement').addEventListener('click', () => {
             document.getElementById('dataManagementPage').classList.add('open');
@@ -11163,7 +11171,7 @@
         document.getElementById('exportBackupBtn').addEventListener('click', () => {
             try {
                 const backupData = {
-                    version: '0.1.2',
+                    version: APP_VERSION,
                     exportTime: new Date().toISOString(),
                     data: {}
                 };
