@@ -1,10 +1,11 @@
 // Service Worker for 小兔板栗 PWA
-const CACHE_NAME = 'xiaotu-banli-v1';
+const CACHE_NAME = 'xiaotu-banli-v3';
+const BASE_URL = 'https://banlijiujiu.github.io/tutu/';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/icon.png'
+  BASE_URL,
+  BASE_URL + 'index.html',
+  BASE_URL + 'manifest.webmanifest',
+  BASE_URL + 'icon.png'
 ];
 
 // 安装事件
@@ -44,19 +45,15 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // 缓存命中，返回缓存
         if (response) {
           return response;
         }
         
-        // 没有缓存，发起网络请求
         return fetch(event.request).then((response) => {
-          // 检查是否是有效响应
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
           }
           
-          // 克隆响应（因为响应只能被消费一次）
           const responseToCache = response.clone();
           
           caches.open(CACHE_NAME)
@@ -68,8 +65,7 @@ self.addEventListener('fetch', (event) => {
         });
       })
       .catch(() => {
-        // 网络请求失败时，返回离线页面（如果有）
-        return caches.match('/');
+        return caches.match(BASE_URL + 'index.html');
       })
   );
 });

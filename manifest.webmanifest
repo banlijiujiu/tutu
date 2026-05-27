@@ -2,23 +2,57 @@
   "name": "小兔板栗",
   "short_name": "小兔板栗",
   "description": "小兔板栗 - 手机模拟器PWA应用",
-  "start_url": "/",
-  "display": "standalone",
+  "start_url": "https://banlijiujiu.github.io/tutu/",
+  "scope": "https://banlijiujiu.github.io/tutu/",
+  "display": "fullscreen",
   "orientation": "portrait",
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
     {
       "src": "icon.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "384x384",
+      "type": "image/png"
     },
     {
       "src": "icon.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ],
   "categories": ["entertainment", "utilities"],
