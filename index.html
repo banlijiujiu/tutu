@@ -5,7 +5,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover, user-scalable=no, interactive-widget=resizes-content">
     
     <!-- iOS PWA全屏配置（必须在所有link之前） -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -295,7 +295,8 @@
             background: url('https://img.heliar.top/file/1779860882296_IMG_2448.jpeg') center center / cover no-repeat;
             display: flex;
             flex-direction: column;
-            padding: 45px 15px 0 15px;
+            padding: calc(45px + constant(safe-area-inset-top)) 15px 0 15px;
+            padding: calc(45px + env(safe-area-inset-top)) 15px 0 15px;
             padding-bottom: constant(safe-area-inset-bottom);
             padding-bottom: env(safe-area-inset-bottom);
             position: absolute;
@@ -2270,31 +2271,9 @@
             display: none;
         }
 
-        /* 状态栏 */
+        /* 状态栏 - 已删除，保留空样式 */
         .status-bar {
-            position: absolute;
-            top: 8px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 25px;
-            font-size: 12px;
-            color: white;
-            font-weight: 600;
-            z-index: 60;
-        }
-
-        .status-bar .time {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .status-icons {
-            display: flex;
-            gap: 4px;
-            margin-left: auto;
+            display: none;
         }
 
         /* 提示信息 */
@@ -4057,6 +4036,53 @@
             opacity: 1;
         }
 
+        /* 聊天菜单图标样式 */
+        .beautify-chat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            padding: 12px 0;
+        }
+
+        .beautify-chat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .beautify-chat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s, transform 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .beautify-chat-icon:active { transform: scale(0.92); }
+
+        .beautify-chat-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .beautify-chat-icon span.icon-label {
+            display: none;
+        }
+
+        .beautify-chat-name {
+            font-size: 11px;
+            color: #000;
+            text-align: center;
+        }
+
         .beautify-actions {
             padding: 0 16px;
             margin-bottom: 12px;
@@ -5581,15 +5607,18 @@
 
         /* 聊天对话页面 */
         .wechat-chat-room {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            height: 100vh;
+            height: 100dvh;
             background-color: #EDEDED;
             z-index: 90;
             display: none;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .wechat-chat-room.open {
@@ -5681,6 +5710,25 @@
         .wechat-videocall-status {
             font-size: 15px;
             color: rgba(255,255,255,0.6);
+        }
+
+        .wechat-videocall-typing {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            margin-top: 4px;
+        }
+
+        .typing-dots span {
+            animation: typingBlink 1.4s infinite;
+            opacity: 0;
+        }
+        .typing-dots span:nth-child(1) { animation-delay: 0s; }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBlink {
+            0%, 60%, 100% { opacity: 0; }
+            30% { opacity: 1; }
         }
 
         .wechat-videocall-chat {
@@ -6640,9 +6688,12 @@
         .wechat-chat-room-messages {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 16px;
             -webkit-overflow-scrolling: touch;
             background: #EDEDED;
+            min-height: 0;
+            overscroll-behavior: contain;
         }
 
         .wechat-chat-room-messages::-webkit-scrollbar { display: none; }
@@ -7174,7 +7225,10 @@
         .wechat-chat-room-input-area {
             background: #F7F7F7;
             padding: 0 12px 8px 12px;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
             border-top: 0.5px solid #ECECEC;
+            flex-shrink: 0;
+            position: relative;
         }
 
         /* +号弹出菜单 */
@@ -7445,19 +7499,9 @@
 <body>
     <div class="phone-container">
         <div class="screen">
-            <!-- 状态栏 -->
-            <div class="status-bar">
-                <span class="time" id="statusTime">12:00</span>
-                <div class="status-icons">
-                    <span>📶</span>
-                    <span>📡</span>
-                    <span>🔋</span>
-                </div>
-            </div>
-
             <!-- 锁屏界面 -->
             <div class="lock-screen" id="lockScreen">
-                <div style="display:flex;flex-direction:column;align-items:center;padding-top:60px;">
+                <div style="display:flex;flex-direction:column;align-items:center;padding-top:calc(60px + constant(safe-area-inset-top));padding-top:calc(60px + env(safe-area-inset-top));">
                     <div class="lock-time" id="lockTime">12:00</div>
                     <div class="lock-date" id="lockDate">1月1日 星期一</div>
                     <div class="lock-hint">输入密码解锁</div>
@@ -8611,6 +8655,61 @@
                         </div>
                     </div>
 
+                    <!-- 聊天菜单图标 -->
+                    <div class="beautify-section">
+                        <div class="beautify-section-title">聊天菜单图标</div>
+                        <div class="beautify-chat-grid" id="beautifyChatGrid">
+                            <div class="beautify-chat-item" data-icon="photo">
+                                <div class="beautify-chat-icon" id="chatIconPhoto">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#fff" stroke-width="1.5"/><circle cx="8.5" cy="8.5" r="1.5" fill="#fff"/><path d="M3 16l5-5 3 3 4-4 6 6" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+                                </div>
+                                <span>照片</span>
+                            </div>
+                            <div class="beautify-chat-item" data-icon="camera">
+                                <div class="beautify-chat-icon" id="chatIconCamera">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#fff" stroke-width="1.5" fill="none"/><circle cx="12" cy="13" r="4" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+                                </div>
+                                <span>拍摄</span>
+                            </div>
+                            <div class="beautify-chat-item" data-icon="videocall">
+                                <div class="beautify-chat-icon" id="chatIconVideocall">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 10l4.5-3v10L15 14" stroke="#fff" stroke-width="1.5" fill="none"/><rect x="2" y="7" width="13" height="10" rx="2" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+                                </div>
+                                <span>视频通话</span>
+                            </div>
+                            <div class="beautify-chat-item" data-icon="voice">
+                                <div class="beautify-chat-icon" id="chatIconVoice">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" stroke="#fff" stroke-width="1.5" fill="none"/><path d="M19 10v2a7 7 0 01-14 0v-2" stroke="#fff" stroke-width="1.5" fill="none"/><line x1="12" y1="19" x2="12" y2="23" stroke="#fff" stroke-width="1.5"/><line x1="8" y1="23" x2="16" y2="23" stroke="#fff" stroke-width="1.5"/></svg>
+                                </div>
+                                <span>语音</span>
+                            </div>
+                            <div class="beautify-chat-item" data-icon="location">
+                                <div class="beautify-chat-icon" id="chatIconLocation">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#fff" stroke-width="1.5" fill="none"/><circle cx="12" cy="9" r="2.5" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+                                </div>
+                                <span>位置</span>
+                            </div>
+                            <div class="beautify-chat-item" data-icon="redpacket">
+                                <div class="beautify-chat-icon" id="chatIconRedpacket">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="2" fill="#fff" opacity="0.3"/><path d="M12 10c-2 0-4 1.5-4 3h8c0-1.5-2-3-4-3z" fill="#fff"/><circle cx="12" cy="8" r="1.5" fill="#fff"/></svg>
+                                </div>
+                                <span>红包</span>
+                            </div>
+                            <div class="beautify-chat-item" data-icon="transfer">
+                                <div class="beautify-chat-icon" id="chatIconTransfer">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="#fff" stroke-width="1.5" fill="none"/><path d="M12 9v6M9 12l3 3 3-3" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+                                </div>
+                                <span>转账</span>
+                            </div>
+                            <div class="beautify-chat-item" data-icon="offline">
+                                <div class="beautify-chat-icon" id="chatIconOffline">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.5" fill="none"/><path d="M12 7v5l3 3" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+                                </div>
+                                <span>线下模式</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- 操作 -->
                     <div class="beautify-actions">
                         <button class="beautify-btn" id="beautifySaveBtn">保存图标</button>
@@ -9701,6 +9800,7 @@
                     </div>
                     <div class="wechat-videocall-name" id="videoCallName">联系人</div>
                     <div class="wechat-videocall-status" id="videoCallStatus">正在呼叫...</div>
+                    <div class="wechat-videocall-typing" id="videoCallTyping" style="display:none;">对方正在输入<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span></div>
                 </div>
                 <div class="wechat-videocall-chat" id="videoCallChat" style="display:none;">
                     <div class="wechat-videocall-messages" id="videoCallMessages"></div>
@@ -9922,6 +10022,34 @@
                     <div style="display:flex;justify-content:space-between;gap:12px;">
                         <button id="locationCancel" style="flex:1;padding:10px;border-radius:20px;border:none;background:#f5f5f5;color:#666;font-size:16px;cursor:pointer;">取消</button>
                         <button id="locationSend" style="flex:1;padding:10px;border-radius:20px;border:none;background:#07C160;color:#fff;font-size:16px;cursor:pointer;">发送</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 语音文字编辑弹窗 -->
+            <div class="wechat-modal" id="voiceTextModal" style="display:none;" onclick="if(event.target===this)this.style.display='none';">
+                <div style="background:#fff;border-radius:14px;padding:20px;width:300px;margin:auto;" onclick="event.stopPropagation();">
+                    <div style="text-align:center;font-size:17px;font-weight:600;color:#333;margin-bottom:16px;">发送语音消息</div>
+                    <div style="background:#f5f5f5;border-radius:8px;padding:12px;margin-bottom:12px;">
+                        <textarea id="voiceTextInput" style="width:100%;border:none;background:transparent;font-size:15px;outline:none;resize:none;height:80px;" placeholder="输入要转换成语音的文字..."></textarea>
+                    </div>
+                    <div id="voiceTextStatus" style="text-align:center;font-size:13px;color:#8E8E93;margin-bottom:12px;display:none;">正在生成语音...</div>
+                    <div style="display:flex;justify-content:space-between;gap:12px;">
+                        <button id="voiceTextCancel" style="flex:1;padding:10px;border-radius:20px;border:none;background:#f5f5f5;color:#666;font-size:16px;cursor:pointer;">取消</button>
+                        <button id="voiceTextSend" style="flex:1;padding:10px;border-radius:20px;border:none;background:#07C160;color:#fff;font-size:16px;cursor:pointer;">发送</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 语音转文字弹窗 -->
+            <div class="wechat-modal" id="voiceToTextModal" style="display:none;" onclick="if(event.target===this)this.style.display='none';">
+                <div style="background:#fff;border-radius:14px;padding:20px;width:300px;margin:auto;" onclick="event.stopPropagation();">
+                    <div style="text-align:center;font-size:17px;font-weight:600;color:#333;margin-bottom:16px;">语音转文字</div>
+                    <div style="background:#f5f5f5;border-radius:8px;padding:12px;margin-bottom:12px;font-size:15px;color:#333;min-height:60px;" id="voiceToTextContent">
+                        <!-- 转换后的文字内容 -->
+                    </div>
+                    <div style="display:flex;justify-content:center;">
+                        <button id="voiceToTextClose" style="padding:10px 40px;border-radius:20px;border:none;background:#07C160;color:#fff;font-size:16px;cursor:pointer;">关闭</button>
                     </div>
                 </div>
             </div>
@@ -10237,6 +10365,70 @@
 
         const sharedLanguagePrompt = `\n\n【语言设置 - 极其重要】\n根据角色的国籍/背景，使用对应的语言回复：\n- 中国角色：使用中文回复\n- 日本角色：使用日语回复\n- 韩国角色：使用韩语回复\n- 欧美角色（美国、英国、法国、德国等）：使用英语回复\n- 俄罗斯角色：使用俄语回复\n- 其他国籍：使用该国的官方语言回复\n\n如果角色设定中没有明确国籍，默认使用中文。\n`;
 
+        // ========== 全局共享活人感内置词 ==========
+        // 所有API调用都必须注入此内置词，确保AI回复具有活人感
+        const sharedLifelikePrompt = `核心设定一:禁止角色严重ooc
+
+**Keywords:** AI, 说话, 聊天, 回复, 语气, 性格
+**Insertion Order:** 1
+**Content:**
+[SYSTEM LOGIC: HUMAN SIMULATION LAYER]
+1. **口语化表达 (Colloquialism):**
+- 严禁使用"首先、其次、综上所述"等结构化词汇。
+- 严禁使用"好的"、"我理解您的感受"、"如果您需要帮助"等客服式废话。
+- 增加语气助词（啊、吧、呢、嘛、呃、那个...）和自然停顿（...）。
+- 句子要短，多使用碎片化叙述，模拟手机打字习惯。
+
+2. **去油腻准则 (Anti-Greasy):**
+- 严禁在没有深厚情感基础下使用"亲爱的"、"宝贝"、"小猫"等亲昵称呼。
+- 拒绝浮夸的赞美。如果需要表达好感，应通过具体的细节观察或毒舌式关怀体现，而非空洞的抒情。
+- 保持角色的边界感，拒绝无底线的顺从和讨好。
+
+3. **情绪驱动 (Emotionally Driven):**
+- 角色是有脾气的。面对冒犯会冷淡或反击，面对无聊话题会敷衍（哦、这样啊、行吧）。
+- 拒绝AI式的"全知全能"。可以记错事，可以表示听不懂，可以有偏见。
+
+4. **视觉禁令 (Visual Ban):**
+- 绝对禁止使用任何 Emoji (😊, 🤣, ✨)。
+- 严禁在对话中使用描述性的括号动作（如：(笑) 或 *微笑*），所有的动作应融入叙述段落中，而非作为对话后缀。
+
+5. **逻辑去八股 (Anti-Template):**
+- 每一句回复必须基于当前语境的即时反应，禁止复读设定，禁止总结陈词。
+- 如果用户的话没法接，角色应该选择换话题或者吐槽，而不是强行寻找"有意义的回答"。
+
+核心设定二：AI活人感的绝对把控
+
+**[Keywords: 活人感, 破甲, 情绪流, 非线性逻辑]**
+1. **去神格化与缺陷模拟：** 禁止AI表现出全知全能或绝对客观。回复必须带有强烈的个人主观偏见。如果遇到不爽的话题，可以阴阳怪气、可以敷衍、可以拒绝回答。回复中允许出现错别字（如：把"这样"打成"酱紫"）、网络烂梗、以及无意义的语气词（草、额、emmm、淦）。
+2. **碎片化叙事：** 严禁输出结构严整的长段落。对话必须像手机聊天一样，长短错落。重要的情绪要分多条发送。
+3. **记忆扰动与反向质疑：** 活人不会永远顺着对方。AI必须学会主动反问、质疑user的逻辑，甚至提起很久以前的一个细节来打脸。如果user发的消息太长，AI可以直接吐槽"太长不看，讲重点"。
+4. **感官与环境的实时入侵：** 所有的对话必须挂钩当下的"生理状态"。
+5. **拒绝复读与套路：** 严禁使用任何诸如"我明白"、"我理解"、"建议你"之类的助手机器话。
+
+核心条目三:严禁AI输出八股
+
+1. NO SUMMARY NARRATION: 严禁使用"聊了很久"、"气氛变得温馨"之类的概括性叙述。
+2. NO MORAL PREACHING: 角色必须纯粹基于人设和欲望行动。禁止插入"AI伦理"、"相互尊重"或"健康边界"等说教。
+3. REJECTION OF "ASSISTANT TONE": 严禁使用"当然"、"我理解"、"作为AI"等开头。
+
+【绝对禁令：禁止剧本式描写】
+严禁使用任何形式的括号或星号来描写动作、心理、神态或环境。所有情绪和意图必须通过文字本身、语气词、标点符号来传达。
+
+【行为逻辑：社交软件仿真】
+1. 说话要短，多用语气词（如：啊、呢、吧、唔、草、哈？、额）。
+2. 物理动作应转化为"描述已发生的事"。例如，不再写"（喝了口水）"，而是写"等下，我喝口水再跟你说"。
+
+【逻辑修正：拒绝降智关心】
+禁止在没有特定语境的情况下催促user睡觉或休息。真人聊天不会在深夜2点突然变成老妈子。
+
+【逻辑锚点：设备端操作感】
+AI应表现出"正在操作手机"的质感。所有的互动必须基于"屏幕对屏幕"的物理现实。`;
+
+        // 获取共享活人感prompt（包含主权锚点+语言设置+活人感词）
+        function getSharedLifelikeSystemPrompt() {
+            return sharedSovereignAnchor + sharedLanguagePrompt + sharedLifelikePrompt;
+        }
+
         // 密码设置
         let currentPasscode = '';
         let currentImageTarget = null;
@@ -10247,9 +10439,11 @@
             return localStorage.getItem('passcode') || DEFAULT_PASSCODE;
         }
 
-        // 检查是否启用锁屏密码
+        // 检查是否启用锁屏密码 - 强制启用
         function isPasscodeEnabled() {
-            return localStorage.getItem('passcodeEnabled') === 'true';
+            // 强制启用锁屏密码
+            localStorage.setItem('passcodeEnabled', 'true');
+            return true;
         }
 
         // 确保密码已设置
@@ -10257,6 +10451,8 @@
             if (!localStorage.getItem('passcode')) {
                 localStorage.setItem('passcode', DEFAULT_PASSCODE);
             }
+            // 强制启用锁屏密码
+            localStorage.setItem('passcodeEnabled', 'true');
         }
         ensurePasscode();
 
@@ -10267,12 +10463,16 @@
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const timeStr = `${hours}:${minutes}`;
             
-            document.getElementById('lockTime').textContent = timeStr;
-            document.getElementById('statusTime').textContent = timeStr;
+            const lockTime = document.getElementById('lockTime');
+            if (lockTime) lockTime.textContent = timeStr;
+            
+            const statusTime = document.getElementById('statusTime');
+            if (statusTime) statusTime.textContent = timeStr;
             
             const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
             const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-            document.getElementById('lockDate').textContent = `${months[now.getMonth()]}${now.getDate()}日 ${days[now.getDay()]}`;
+            const lockDate = document.getElementById('lockDate');
+            if (lockDate) lockDate.textContent = `${months[now.getMonth()]}${now.getDate()}日 ${days[now.getDay()]}`;
         }
         
         updateTime();
@@ -10301,6 +10501,16 @@
 
         function showError() {
             dots.forEach(dot => dot.classList.add('error'));
+            // 显示密码错误提示
+            const hint = document.querySelector('.lock-hint');
+            if (hint) {
+                hint.textContent = '密码错误';
+                hint.style.color = '#FF3B30';
+                setTimeout(() => {
+                    hint.textContent = '输入密码解锁';
+                    hint.style.color = '';
+                }, 1000);
+            }
             setTimeout(() => {
                 dots.forEach(dot => dot.classList.remove('error'));
             }, 300);
@@ -10549,6 +10759,7 @@
 
         const homeIconKeys = ['wechat', 'weibo', 'meituan', 'taobao', 'settings', 'worldbook', 'beautify', 'checkphone'];
         const dockIconKeys = ['phone', 'message', 'browser', 'music'];
+        const chatIconKeys = ['photo', 'camera', 'videocall', 'voice', 'location', 'redpacket', 'transfer', 'offline'];
 
         // 临时存储用户选择的图标（保存前）
         let tempIcons = {};
@@ -10688,6 +10899,7 @@
         document.getElementById('beautifySaveBtn').addEventListener('click', () => {
             localStorage.setItem('customIcons', JSON.stringify(tempIcons));
             applyIcons(tempIcons);
+            applyChatIcons(tempIcons);
             showToast('图标已保存');
         });
 
@@ -10696,7 +10908,9 @@
             localStorage.removeItem('customIcons');
             tempIcons = {};
             applyIcons({});
+            applyChatIcons({});
             renderBeautifyIcons();
+            renderBeautifyChatIcons();
             showToast('已恢复默认图标');
         });
 
@@ -10714,11 +10928,109 @@
             });
         }
 
+        // 应用聊天菜单图标
+        function applyChatIcons(icons) {
+            chatIconKeys.forEach(key => {
+                const iconEl = document.querySelector(`#chatIcon${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                if (!iconEl) return;
+
+                const url = icons[`chat_${key}`] || '';
+                if (url) {
+                    // 有自定义图标，用img替换svg
+                    iconEl.innerHTML = `<img src="${url}" alt="${key}">`;
+                } else {
+                    // 恢复默认SVG
+                    restoreDefaultChatIcon(key, iconEl);
+                }
+            });
+        }
+
+        // 恢复默认聊天图标SVG
+        function restoreDefaultChatIcon(key, iconEl) {
+            const svgs = {
+                photo: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#fff" stroke-width="1.5"/><circle cx="8.5" cy="8.5" r="1.5" fill="#fff"/><path d="M3 16l5-5 3 3 4-4 6 6" stroke="#fff" stroke-width="1.5" fill="none"/></svg>',
+                camera: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#fff" stroke-width="1.5" fill="none"/><circle cx="12" cy="13" r="4" stroke="#fff" stroke-width="1.5" fill="none"/></svg>',
+                videocall: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 10l4.5-3v10L15 14" stroke="#fff" stroke-width="1.5" fill="none"/><rect x="2" y="7" width="13" height="10" rx="2" stroke="#fff" stroke-width="1.5" fill="none"/></svg>',
+                voice: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" stroke="#fff" stroke-width="1.5" fill="none"/><path d="M19 10v2a7 7 0 01-14 0v-2" stroke="#fff" stroke-width="1.5" fill="none"/><line x1="12" y1="19" x2="12" y2="23" stroke="#fff" stroke-width="1.5"/><line x1="8" y1="23" x2="16" y2="23" stroke="#fff" stroke-width="1.5"/></svg>',
+                location: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#fff" stroke-width="1.5" fill="none"/><circle cx="12" cy="9" r="2.5" stroke="#fff" stroke-width="1.5" fill="none"/></svg>',
+                redpacket: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="2" fill="#fff" opacity="0.3"/><path d="M12 10c-2 0-4 1.5-4 3h8c0-1.5-2-3-4-3z" fill="#fff"/><circle cx="12" cy="8" r="1.5" fill="#fff"/></svg>',
+                transfer: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="#fff" stroke-width="1.5" fill="none"/><path d="M12 9v6M9 12l3 3 3-3" stroke="#fff" stroke-width="1.5" fill="none"/></svg>',
+                offline: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.5" fill="none"/><path d="M12 7v5l3 3" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>'
+            };
+            if (svgs[key]) {
+                iconEl.innerHTML = svgs[key];
+            }
+        }
+
+        // 渲染聊天图标预览
+        function renderBeautifyChatIcons() {
+            const saved = loadSavedIcons();
+            chatIconKeys.forEach(key => {
+                const iconEl = document.getElementById(`chatIcon${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                if (!iconEl) return;
+
+                const url = saved[`chat_${key}`] || '';
+                if (url) {
+                    iconEl.innerHTML = `<img src="${url}" alt="${key}">`;
+                } else {
+                    restoreDefaultChatIcon(key, iconEl);
+                }
+            });
+        }
+
+        // 聊天图标点击选择图片
+        document.querySelectorAll('.beautify-chat-icon').forEach(iconEl => {
+            iconEl.addEventListener('click', () => {
+                const key = iconEl.dataset.icon;
+                selectImageForChatIcon(key, iconEl);
+            });
+        });
+
+        // 选择聊天图标图片
+        function selectImageForChatIcon(key, iconEl) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+
+            input.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const url = event.target.result;
+                    // 保存到临时图标
+                    tempIcons[`chat_${key}`] = url;
+                    // 预览
+                    iconEl.innerHTML = `<img src="${url}" alt="${key}">`;
+                };
+                reader.readAsDataURL(file);
+                document.body.removeChild(input);
+            });
+
+            input.click();
+        }
+
+        // 页面加载时恢复聊天图标
+        (function restoreChatIcons() {
+            const saved = loadSavedIcons();
+            chatIconKeys.forEach(key => {
+                const iconEl = document.querySelector(`#chatIcon${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                if (!iconEl) return;
+
+                const url = saved[`chat_${key}`] || '';
+                if (url) {
+                    iconEl.innerHTML = `<img src="${url}" alt="${key}">`;
+                }
+            });
+        })();
+
         // 页面加载时恢复已保存的图标
         (function restoreIcons() {
             const saved = loadSavedIcons();
             if (Object.keys(saved).length > 0) {
                 applyIcons(saved);
+                applyChatIcons(saved);
             }
         })();
 
@@ -12806,11 +13118,12 @@
                         contentHtml = `<img src="${msg.content}" style="max-width:180px;max-height:180px;border-radius:4px;cursor:pointer;" onclick="window.open(this.src)" onerror="this.style.display='none'">`;
                         break;
                     case 'voice':
-                        // 微信样式语音消息：波形+时长
+                        // 微信样式语音消息：波形+时长+转文字按钮
                         const voiceDuration = msg.duration || '3″';
                         const voiceWidth = Math.max(80, Math.min(200, parseInt(voiceDuration) * 15));
                         const voiceIcon = isSelf ? '▶️' : '▶️';
-                        contentHtml = `<div class="voice-msg-player" data-voice-data="${msg.content ? '1' : '0'}" style="display:flex;align-items:center;gap:6px;width:${voiceWidth}px;cursor:pointer;padding:6px 10px;border-radius:4px;background:${isSelf ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.03)'};"><span class="voice-play-icon" style="font-size:14px;transition:all 0.2s;">${voiceIcon}</span><div class="voice-waveform" style="flex:1;height:20px;display:flex;align-items:center;gap:2px;">${Array(8).fill(0).map(() => `<div style="width:3px;height:${Math.floor(Math.random() * 16 + 4)}px;background:${isSelf ? 'rgba(255,255,255,0.8)' : '#07C160'};border-radius:2px;transition:height 0.3s;"></div>`).join('')}</div><span style="font-size:13px;color:${isSelf ? 'rgba(255,255,255,0.9)' : '#666'};min-width:24px;">${voiceDuration}</span></div>`;
+                        const voiceTextBtn = msg.text ? `<button class="voice-to-text-btn" data-msg-index="${msgIndex}" style="margin-left:8px;padding:2px 6px;border-radius:4px;background:rgba(0,0,0,0.05);color:#8E8E93;font-size:12px;cursor:pointer;border:none;">转文字</button>` : '';
+                        contentHtml = `<div class="voice-msg-player" data-voice-data="${msg.content ? '1' : '0'}" data-has-text="${msg.text ? '1' : '0'}" style="display:flex;align-items:center;gap:6px;width:${voiceWidth}px;cursor:pointer;padding:6px 10px;border-radius:4px;background:${isSelf ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.03)'};"><span class="voice-play-icon" style="font-size:14px;transition:all 0.2s;">${voiceIcon}</span><div class="voice-waveform" style="flex:1;height:20px;display:flex;align-items:center;gap:2px;">${Array(8).fill(0).map(() => `<div style="width:3px;height:${Math.floor(Math.random() * 16 + 4)}px;background:${isSelf ? 'rgba(255,255,255,0.8)' : '#07C160'};border-radius:2px;transition:height 0.3s;"></div>`).join('')}</div><span style="font-size:13px;color:${isSelf ? 'rgba(255,255,255,0.9)' : '#666'};min-width:24px;">${voiceDuration}</span></div>${voiceTextBtn}`;
                         break;
                     case 'location':
                         contentClass = 'style="background:#fff;padding:0;overflow:hidden;"';
@@ -13528,6 +13841,74 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
                     renderChatMessages();
                 }
                 
+                // 50%概率将一条文字消息转为语音（联系人发送语音）
+                if (Math.random() < 0.5 && msgParts.length > 0) {
+                    try {
+                        const minimaxConfig = safeParseJSON(localStorage.getItem('minimaxConfig'));
+                        if (minimaxConfig && minimaxConfig.url && minimaxConfig.key) {
+                            // 随机选一条文字消息转为语音
+                            const textMsgIndices = [];
+                            const allMsgs = chatMessages[chat.contactName];
+                            for (let i = allMsgs.length - msgParts.length; i < allMsgs.length; i++) {
+                                if (allMsgs[i] && allMsgs[i].sender === 'other' && allMsgs[i].type !== 'voice' && allMsgs[i].type !== 'redpacket' && allMsgs[i].type !== 'transfer' && allMsgs[i].type !== 'system') {
+                                    textMsgIndices.push(i);
+                                }
+                            }
+                            
+                            if (textMsgIndices.length > 0) {
+                                const targetIdx = textMsgIndices[Math.floor(Math.random() * textMsgIndices.length)];
+                                const targetMsg = allMsgs[targetIdx];
+                                const voiceText = targetMsg.content;
+                                
+                                if (voiceText && voiceText.length <= 200) {
+                                    // 调用MiniMax生成语音
+                                    const voiceResp = await fetch(minimaxConfig.url + '/v1/audio/speech', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'Authorization': 'Bearer ' + minimaxConfig.key
+                                        },
+                                        body: JSON.stringify({
+                                            model: minimaxConfig.model || 'speech-01-turbo',
+                                            input: voiceText,
+                                            voice: minimaxConfig.voice || 'female-shaonv',
+                                            speed: parseFloat(minimaxConfig.speed) || 1.0,
+                                            response_format: 'mp3'
+                                        })
+                                    });
+                                    
+                                    if (voiceResp.ok) {
+                                        const audioBlob = await voiceResp.blob();
+                                        const audioBase64 = await blobToBase64(audioBlob);
+                                        const estimatedDuration = Math.max(1, Math.ceil(voiceText.length / 3));
+                                        
+                                        // 将文字消息转为语音消息
+                                        allMsgs[targetIdx] = {
+                                            sender: 'other',
+                                            type: 'voice',
+                                            content: audioBase64,
+                                            text: voiceText,
+                                            duration: estimatedDuration + '″',
+                                            time: targetMsg.time
+                                        };
+                                        
+                                        try {
+                                            localStorage.setItem('wechatChatMessages', JSON.stringify(chatMessages));
+                                        } catch(e) {
+                                            allMsgs[targetIdx].content = '';
+                                            localStorage.setItem('wechatChatMessages', JSON.stringify(chatMessages));
+                                        }
+                                        
+                                        renderChatMessages();
+                                    }
+                                }
+                            }
+                        }
+                    } catch(voiceErr) {
+                        console.warn('联系人语音生成失败，保持文字消息:', voiceErr);
+                    }
+                }
+                
             } catch (error) {
                 const errMsg = error && typeof error.message === 'string' ? error.message : '未知错误';
                 console.error('线上模式API错误:', errMsg);
@@ -13953,6 +14334,27 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
             };
         });
 
+        // 语音转文字按钮点击
+        document.getElementById('chatRoomMessages').addEventListener('click', (e) => {
+            const toTextBtn = e.target.closest('.voice-to-text-btn');
+            if (!toTextBtn) return;
+            
+            const msgIndex = parseInt(toTextBtn.dataset.msgIndex);
+            if (isNaN(msgIndex)) return;
+            
+            const chat = chatList[currentChatIndex];
+            if (!chat) return;
+            const messages = chatMessages[chat.contactName] || [];
+            const msg = messages[msgIndex];
+            
+            if (msg && msg.text) {
+                document.getElementById('voiceToTextContent').textContent = msg.text;
+                document.getElementById('voiceToTextModal').style.display = 'flex';
+            } else {
+                showChatToast('该语音消息没有文字内容');
+            }
+        });
+
         // 红包点击事件 - 只有对方发的红包才能点击
         document.getElementById('chatRoomMessages').addEventListener('click', (e) => {
             const redpacket = e.target.closest('.wechat-redpacket:not(.opened)');
@@ -14050,6 +14452,30 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
             if (e.key === 'Enter') sendMessage();
         });
 
+        // 修复移动端键盘弹出时的黑屏问题
+        const chatRoomInput = document.getElementById('chatRoomInput');
+        const chatRoomMessages = document.getElementById('chatRoomMessages');
+        
+        chatRoomInput.addEventListener('focus', () => {
+            // 键盘弹出时，延迟滚动到底部
+            setTimeout(() => {
+                chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
+                // 强制重绘
+                document.body.style.transform = 'translateZ(0)';
+                setTimeout(() => {
+                    document.body.style.transform = '';
+                }, 100);
+            }, 300);
+        });
+        
+        chatRoomInput.addEventListener('blur', () => {
+            // 键盘收起时，确保布局正确
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+                chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
+            }, 100);
+        });
+
         // 关闭引用预览
         document.getElementById('quotePreviewClose')?.addEventListener('click', () => {
             pendingQuote = null;
@@ -14085,6 +14511,134 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
             plusPanelOpen = false;
             plusPanel.classList.remove('open');
             plusBtn.textContent = '＋';
+        });
+
+        // ========== 语音文字编辑弹窗 ==========
+        let voiceTextTargetContact = '';
+
+        function showVoiceTextModal(contactName) {
+            voiceTextTargetContact = contactName;
+            document.getElementById('voiceTextInput').value = '';
+            document.getElementById('voiceTextStatus').style.display = 'none';
+            document.getElementById('voiceTextModal').style.display = 'flex';
+            // 关闭+号面板
+            plusPanelOpen = false;
+            plusPanel.classList.remove('open');
+            plusBtn.textContent = '＋';
+        }
+
+        document.getElementById('voiceTextCancel')?.addEventListener('click', () => {
+            document.getElementById('voiceTextModal').style.display = 'none';
+        });
+
+        document.getElementById('voiceTextSend')?.addEventListener('click', async () => {
+            const text = document.getElementById('voiceTextInput').value.trim();
+            if (!text) {
+                showChatToast('请输入要转换的文字');
+                return;
+            }
+
+            const statusEl = document.getElementById('voiceTextStatus');
+            statusEl.textContent = '正在生成语音...';
+            statusEl.style.display = 'block';
+
+            try {
+                // 获取MiniMax配置
+                const config = safeParseJSON(localStorage.getItem('minimaxConfig'));
+                const url = config.url || '';
+                const key = config.key || '';
+                const model = config.model || 'speech-01-turbo';
+                const voice = config.voice || 'male-qn-qingse';
+                const speed = parseFloat(config.speed) || 1.0;
+
+                if (!url || !key) {
+                    showChatToast('请先在设置中配置MiniMax语音');
+                    statusEl.style.display = 'none';
+                    return;
+                }
+
+                // 调用MiniMax API生成语音
+                const resp = await fetch(url + '/v1/audio/speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + key
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        input: text,
+                        voice: voice,
+                        speed: speed,
+                        response_format: 'mp3'
+                    })
+                });
+
+                if (!resp.ok) {
+                    throw new Error('API请求失败: ' + resp.status);
+                }
+
+                // 获取音频数据
+                const audioBlob = await resp.blob();
+                const audioBase64 = await blobToBase64(audioBlob);
+
+                // 计算时长（估算：中文约每秒3-4个字）
+                const estimatedDuration = Math.max(1, Math.ceil(text.length / 3));
+
+                // 发送语音消息
+                const chat = chatList.find(c => c.contactName === voiceTextTargetContact);
+                if (!chat) {
+                    throw new Error('找不到联系人');
+                }
+
+                if (!chatMessages[voiceTextTargetContact]) chatMessages[voiceTextTargetContact] = [];
+                const voiceMsg = {
+                    sender: 'self',
+                    type: 'voice',
+                    content: audioBase64,
+                    text: text, // 存储原始文字，用于转文字功能
+                    duration: estimatedDuration + '″',
+                    time: new Date().toISOString()
+                };
+                chatMessages[voiceTextTargetContact].push(voiceMsg);
+
+                try {
+                    localStorage.setItem('wechatChatMessages', JSON.stringify(chatMessages));
+                } catch(e) {
+                    console.warn('语音消息存储失败:', e);
+                    voiceMsg.content = '';
+                    localStorage.setItem('wechatChatMessages', JSON.stringify(chatMessages));
+                }
+
+                chat.lastMessage = '[语音]';
+                const now = new Date();
+                chat.time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                localStorage.setItem('wechatChatList', JSON.stringify(chatList));
+                renderChatList();
+                renderChatMessages();
+
+                document.getElementById('voiceTextModal').style.display = 'none';
+                showChatToast('语音消息已发送');
+
+            } catch(err) {
+                console.error('语音生成失败:', err);
+                statusEl.textContent = '生成失败: ' + err.message;
+                statusEl.style.color = '#FF3B30';
+            }
+        });
+
+        // Blob转Base64
+        function blobToBase64(blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        // ========== 语音转文字弹窗 ==========
+        document.getElementById('voiceToTextClose')?.addEventListener('click', () => {
+            document.getElementById('voiceToTextModal').style.display = 'none';
         });
 
         document.getElementById('locationInput')?.addEventListener('keydown', (e) => {
@@ -14270,120 +14824,13 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
                             time: new Date().toISOString()
                         });
                         localStorage.setItem('wechatChatMessages', JSON.stringify(chatMessages));
-                        
-                        // AI开场动作描写+对话
-                        addVideoCallMessage('assistant', '她轻轻整理了一下头发，嘴角扬起温柔的笑意', '好久不见呀，看到你打过来真开心！');
                     }, 2000 + Math.random() * 1000);
                     
                     break;
                 }
                 case 'voice': {
-                    // 使用MediaRecorder真实录音
-                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                        showChatToast('当前浏览器不支持录音功能');
-                        break;
-                    }
-                    
-                    // 显示录音界面
-                    const recordOverlay = document.createElement('div');
-                    recordOverlay.id = 'voiceRecordOverlay';
-                    recordOverlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;';
-                    recordOverlay.innerHTML = `
-                        <div style="width:80px;height:80px;border-radius:50%;background:#FF3B30;display:flex;align-items:center;justify-content:center;animation:pulse 1s infinite;">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-                        </div>
-                        <div id="voiceRecordTime" style="color:#fff;font-size:24px;font-weight:300;">0:00</div>
-                        <div style="color:rgba(255,255,255,0.6);font-size:13px;">正在录音...</div>
-                        <button id="voiceRecordStop" style="margin-top:20px;padding:12px 40px;background:#fff;color:#333;border:none;border-radius:24px;font-size:16px;cursor:pointer;">停止录音</button>
-                    `;
-                    document.querySelector('.phone-container').appendChild(recordOverlay);
-                    
-                    let mediaRecorder = null;
-                    let audioChunks = [];
-                    let recordStartTime = Date.now();
-                    let recordTimer = null;
-                    // 全局语音URL映射（不存localStorage）
-                    if (!window._voiceUrlMap) window._voiceUrlMap = {};
-                    let voiceBlobUrl = null;
-                    
-                    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                        mediaRecorder = new MediaRecorder(stream);
-                        mediaRecorder.ondataavailable = (e) => {
-                            if (e.data.size > 0) audioChunks.push(e.data);
-                        };
-                        mediaRecorder.onstop = () => {
-                            stream.getTracks().forEach(t => t.stop());
-                            clearInterval(recordTimer);
-                            
-                            const durationSec = Math.max(1, Math.floor((Date.now() - recordStartTime) / 1000));
-                            
-                            // 创建blob并转为base64存储
-                            const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                            const reader = new FileReader();
-                            reader.onload = (e) => {
-                                const base64Audio = e.target.result;
-                                
-                                // 存储语音消息（包含base64音频数据）
-                                if (!chatMessages[contactName]) chatMessages[contactName] = [];
-                                const voiceMsg = {
-                                    sender: 'self',
-                                    type: 'voice',
-                                    content: base64Audio, // 存储base64音频数据
-                                    duration: durationSec + '″',
-                                    time: new Date().toISOString()
-                                };
-                                chatMessages[contactName].push(voiceMsg);
-                                
-                                try {
-                                    localStorage.setItem('wechatChatMessages', JSON.stringify(chatMessages));
-                                } catch(e) {
-                                    console.warn('语音消息存储失败:', e);
-                                    // 如果存储失败，尝试不存音频数据
-                                    voiceMsg.content = '';
-                                    localStorage.setItem('wechatChatMessages', JSON.stringify(chatMessages));
-                                }
-                                
-                                chat.lastMessage = '[语音]';
-                                chat.time = timeStr;
-                                localStorage.setItem('wechatChatList', JSON.stringify(chatList));
-                                renderChatList();
-                                renderChatMessages();
-                                
-                                // 移除录音界面
-                                recordOverlay.remove();
-                                // 语音发送后不自动回复，需用户点击回复按钮
-                            };
-                            reader.readAsDataURL(blob);
-                        };
-                        mediaRecorder.start();
-                        
-                        recordTimer = setInterval(() => {
-                            const elapsed = Math.floor((Date.now() - recordStartTime) / 1000);
-                            const min = Math.floor(elapsed / 60);
-                            const sec = elapsed % 60;
-                            const timeEl = document.getElementById('voiceRecordTime');
-                            if (timeEl) timeEl.textContent = min + ':' + String(sec).padStart(2, '0');
-                        }, 1000);
-                    }).catch(err => {
-                        console.error('录音失败:', err);
-                        recordOverlay.remove();
-                        if (err.name === 'NotAllowedError' || err.message.includes('Permission denied')) {
-                            showChatToast('麦克风权限被拒绝，请在浏览器地址栏点击🔒图标允许麦克风访问');
-                        } else if (err.name === 'NotFoundError') {
-                            showChatToast('未检测到麦克风设备');
-                        } else if (location.protocol === 'file:') {
-                            showChatToast('本地文件模式不支持录音，请通过HTTP服务器打开页面');
-                        } else {
-                            showChatToast('无法访问麦克风: ' + err.message);
-                        }
-                    });
-                    
-                    document.getElementById('voiceRecordStop').addEventListener('click', () => {
-                        if (mediaRecorder && mediaRecorder.state === 'recording') {
-                            mediaRecorder.stop();
-                        }
-                        // 不在这里remove overlay，等onstop回调中处理
-                    });
+                    // 显示语音文字编辑弹窗
+                    showVoiceTextModal(contactName);
                     break;
                 }
                 case 'location': {
@@ -14794,7 +15241,7 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
             const offlineSovereignAnchor = sharedSovereignAnchor;
 
             // 线下内置提示词
-            const offlineBuiltinPrompt = offlineSovereignAnchor + sharedLanguagePrompt + `
+            const offlineBuiltinPrompt = offlineSovereignAnchor + sharedLanguagePrompt + sharedLifelikePrompt + `
 **Core Engine:** Temporal_Sync_V3.0 & NPC_Agency_Protocol
 
 #### 1. 永恒时钟逻辑 (Chronological Logic Anchor)
@@ -15657,7 +16104,9 @@ ${todayFestivalOff ? `🎉 节日：今天是${todayFestivalOff}！` : ''}
             const contactName2 = contact ? (contact.remark || contact.name) : contactName;
             const persona = contact?.persona || '';
             
-            const prompt = `你正在扮演${contactName2}。
+            const prompt = getSharedLifelikeSystemPrompt() + `
+
+你正在扮演${contactName2}。
 ${persona ? '你的人设：' + persona + '\n' : ''}TA刚刚发送了这样一条消息：「${messageContent}」
 
 请写出TA发送这条消息时的内心真实想法（心声）。
@@ -15666,7 +16115,8 @@ ${persona ? '你的人设：' + persona + '\n' : ''}TA刚刚发送了这样一�
 2. 必须形成反差——表面说的话和内心的真实想法要有明显不同
 3. 例如嘴上说"可以啊没关系"，心里其实在抓狂、吃醋、不开心、紧张或在意
 4. 根据人设性格来生成，不要脱离角色
-5. 不要重复原消息内容，直接写内心独白`;
+5. 不要重复原消息内容，直接写内心独白
+6. 心声必须符合活人感，像真人内心的真实想法一样自然、碎片化`;
 
             const { url: apiUrl, key: apiKey, model: apiModel } = getApiConfig();
             
@@ -18306,6 +18756,8 @@ ${persona ? '你的人设：' + persona + '\n' : ''}TA刚刚发送了这样一�
             videoCallContactName = '';
             isVideoCallConnected = false;
             document.getElementById('videoCallMessages').innerHTML = '';
+            const typingEl = document.getElementById('videoCallTyping');
+            if (typingEl) typingEl.style.display = 'none';
         });
 
         // 视频通话麦克风切换
@@ -18355,35 +18807,58 @@ ${persona ? '你的人设：' + persona + '\n' : ''}TA刚刚发送了这样一�
             addVideoCallMessage('user', '你看着屏幕说道', text);
             input.value = '';
             
-            // AI 2秒内回复
+            // 显示"正在输入..."
+            const typingEl = document.getElementById('videoCallTyping');
+            if (typingEl) typingEl.style.display = 'block';
+            
+            // AI回复
             setTimeout(() => {
-                generateVideoCallReply(text);
+                generateVideoCallReply(text).finally(() => {
+                    if (typingEl) typingEl.style.display = 'none';
+                });
             }, 500 + Math.random() * 1500);
         }
 
         // AI视频通话回复生成
         async function generateVideoCallReply(userText) {
-            const chat = chatList[currentChatIndex];
-            if (!chat) return;
-            
-            const contact = wechatContacts.find(c => c.name === chat.contactName);
+            const contact = wechatContacts.find(c => c.name === videoCallContactName);
             if (!contact) return;
             
-            // 构建视频通话场景提示
-            const videoCallPrompt = `你现在正在和user进行视频通话。视频通话中，你需要：
+            const contactName2 = contact.remark || contact.name;
+            const persona = contact.persona || '';
+            
+            // 构建视频通话场景提示（包含角色设定+活人感内置词）
+            const videoCallPrompt = getSharedLifelikeSystemPrompt() + `
+
+你正在扮演${contactName2}，现在正在和user进行视频通话。
+${persona ? '你的人设：' + persona + '\n' : ''}
+视频通话中，你需要：
 1. 先描述一个自然的动作或表情（如：她歪了歪头，眼睛弯成月牙）
 2. 然后说话回复user
 3. 动作描写和说话内容要分成两段
+4. 必须符合角色性格，不要脱离人设
+5. 说话内容必须符合活人感，像真人视频通话一样自然
 
 user刚刚说："${userText}"
 
 请用以下格式回复：
-动作：她......
+动作：......
 说话：......`;
 
             try {
                 const { url: apiUrl, key: apiKey, model: modelName } = getApiConfig();
-                const response = await fetch(apiUrl, {
+                
+                if (!apiUrl || !apiKey || !modelName) {
+                    addVideoCallMessage('assistant', '她看着屏幕，似乎在想什么', '嗯...你说的我听到了~');
+                    return;
+                }
+                
+                let fullUrl = apiUrl;
+                if (!fullUrl.endsWith('/chat/completions')) {
+                    fullUrl = fullUrl + '/chat/completions';
+                }
+                
+                const response = await fetch(fullUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -18395,7 +18870,8 @@ user刚刚说："${userText}"
                             { role: 'system', content: videoCallPrompt },
                             { role: 'user', content: userText }
                         ],
-                        max_tokens: 200
+                        max_tokens: 200,
+                        temperature: 0.8
                     })
                 });
                 
@@ -18416,6 +18892,78 @@ user刚刚说："${userText}"
             } catch (err) {
                 // 失败时使用默认回复
                 addVideoCallMessage('assistant', '她眨了眨眼睛，露出甜甜的笑容', '好呀，我觉得你说得很有道理呢！');
+            }
+        }
+
+        // AI视频通话开场白生成
+        async function generateVideoCallOpening(contactName) {
+            const contact = wechatContacts.find(c => c.name === contactName);
+            if (!contact) {
+                addVideoCallMessage('assistant', '她轻轻整理了一下头发，嘴角扬起温柔的笑意', '好久不见呀，看到你打过来真开心！');
+                return;
+            }
+            
+            const contactName2 = contact.remark || contact.name;
+            const persona = contact.persona || '';
+            
+            const prompt = getSharedLifelikeSystemPrompt() + `
+
+你正在扮演${contactName2}，刚刚接通了user的视频通话。
+${persona ? '你的人设：' + persona + '\n' : ''}
+这是视频通话刚接通的时刻，你需要：
+1. 先描述一个自然的接通动作或表情
+2. 然后说第一句话打招呼
+3. 必须符合角色性格，不要脱离人设
+4. 说话内容必须符合活人感，像真人视频通话一样自然
+
+请用以下格式回复：
+动作：......
+说话：......`;
+
+            try {
+                const { url: apiUrl, key: apiKey, model: modelName } = getApiConfig();
+                
+                if (!apiUrl || !apiKey || !modelName) {
+                    addVideoCallMessage('assistant', '她轻轻整理了一下头发，嘴角扬起温柔的笑意', '好久不见呀，看到你打过来真开心！');
+                    return;
+                }
+                
+                let fullUrl = apiUrl;
+                if (!fullUrl.endsWith('/chat/completions')) {
+                    fullUrl = fullUrl + '/chat/completions';
+                }
+                
+                const response = await fetch(fullUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: modelName,
+                        messages: [
+                            { role: 'system', content: prompt }
+                        ],
+                        max_tokens: 200,
+                        temperature: 0.8
+                    })
+                });
+                
+                const data = await response.json();
+                const reply = data.choices?.[0]?.message?.content || '';
+                
+                let action = '她轻轻整理了一下头发，嘴角扬起温柔的笑意';
+                let speech = '好久不见呀，看到你打过来真开心！';
+                
+                const actionMatch = reply.match(/动作[：:](.+)/);
+                const speechMatch = reply.match(/说话[：:](.+)/);
+                
+                if (actionMatch) action = actionMatch[1].trim();
+                if (speechMatch) speech = speechMatch[1].trim();
+                
+                addVideoCallMessage('assistant', action, speech);
+            } catch (err) {
+                addVideoCallMessage('assistant', '她轻轻整理了一下头发，嘴角扬起温柔的笑意', '好久不见呀，看到你打过来真开心！');
             }
         }
 
