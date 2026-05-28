@@ -7351,17 +7351,19 @@
 
         .wechat-chat-room-input-wrap {
             flex: 1;
-            background: #fff;
-            border-radius: 4px;
-            padding: 8px 12px;
+            background: #F2F2F4;
+            border-radius: 18px;
+            padding: 10px 16px;
+            border: 1px solid rgba(0,0,0,0.06);
         }
 
         .wechat-chat-room-input-wrap input {
             width: 100%;
             border: none;
             outline: none;
-            font-size: 15px;
+            font-size: 16px;
             background: transparent;
+            color: #000;
         }
 
         .wechat-service-group {
@@ -11503,7 +11505,7 @@ AI应表现出"正在操作手机"的质感。所有的互动必须基于"屏幕
 
         // ========== 全局版本号配置 ==========
         // 固定版本号为 0.1.4
-        const APP_VERSION = '0.1.6';
+        const APP_VERSION = '0.1.7';
         
         // ========== 数据管理页面 ==========
         // 自动更新页面上的版本号显示
@@ -14510,7 +14512,7 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
             if (e.key === 'Enter') sendMessage();
         });
 
-        // 修复iOS键盘弹出时的黑屏问题 - 终极方案
+        // 修复iOS键盘弹出时的黑屏闪烁问题
         const chatRoomInput = document.getElementById('chatRoomInput');
         const chatRoomMessages = document.getElementById('chatRoomMessages');
         const chatRoom = document.querySelector('.wechat-chat-room');
@@ -14518,9 +14520,12 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
         // iOS专用键盘处理
         if (window.visualViewport && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
             let isKeyboardOpen = false;
+            let isBlurScheduled = false;
             
             // 监听视口变化
             window.visualViewport.addEventListener('resize', () => {
+                if (!chatRoom.classList.contains('open')) return;
+                
                 const vvHeight = window.visualViewport.height;
                 const windowHeight = window.innerHeight;
                 const keyboardHeight = windowHeight - vvHeight;
@@ -14528,55 +14533,67 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
                 if (keyboardHeight > 150 && !isKeyboardOpen) {
                     // 键盘刚弹出
                     isKeyboardOpen = true;
+                    isBlurScheduled = false;
                     
-                    // 关键：调整聊天容器高度为可视区域高度
-                    chatRoom.style.height = vvHeight + 'px';
-                    chatRoom.style.maxHeight = vvHeight + 'px';
-                    
-                    // 滚动消息到底部
-                    setTimeout(() => {
-                        chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
-                    }, 50);
-                    
-                } else if (keyboardHeight <= 150 && isKeyboardOpen) {
-                    // 键盘刚收起
+                    // 直接设置高度，不使用过渡，避免闪烁
+                    requestAnimationFrame(() => {
+                        chatRoom.style.height = vvHeight + 'px';
+                        setTimeout(() => {
+                            chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
+                        }, 100);
+                    });
+                } else if (keyboardHeight <= 50 && isKeyboardOpen) {
+                    // 键盘收起
                     isKeyboardOpen = false;
                     
-                    // 恢复原始高度
-                    chatRoom.style.height = '100%';
-                    chatRoom.style.maxHeight = '';
-                    
-                    setTimeout(() => {
-                        window.scrollTo(0, 0);
-                        chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
-                    }, 50);
+                    requestAnimationFrame(() => {
+                        chatRoom.style.height = '';
+                        setTimeout(() => {
+                            window.scrollTo(0, 1);
+                            window.scrollTo(0, 0);
+                        }, 100);
+                    });
                 }
             });
             
-            // focus时确保处理
+            // focus时处理
             chatRoomInput.addEventListener('focus', () => {
+                isBlurScheduled = false;
+                
+                // 延迟检测键盘
                 setTimeout(() => {
+                    if (!chatRoom.classList.contains('open')) return;
+                    
                     const vvHeight = window.visualViewport.height;
                     const windowHeight = window.innerHeight;
                     const keyboardHeight = windowHeight - vvHeight;
                     
                     if (keyboardHeight > 150) {
                         isKeyboardOpen = true;
-                        chatRoom.style.height = vvHeight + 'px';
-                        chatRoom.style.maxHeight = vvHeight + 'px';
-                        chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
+                        requestAnimationFrame(() => {
+                            chatRoom.style.height = vvHeight + 'px';
+                            chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
+                        });
                     }
-                }, 300);
+                }, 200);
             });
             
-            // blur时恢复
+            // blur时处理
             chatRoomInput.addEventListener('blur', () => {
+                // 防止快速点击导致的闪烁
+                if (isBlurScheduled) return;
+                isBlurScheduled = true;
+                
                 setTimeout(() => {
-                    isKeyboardOpen = false;
-                    chatRoom.style.height = '100%';
-                    chatRoom.style.maxHeight = '';
-                    window.scrollTo(0, 0);
-                }, 100);
+                    if (isKeyboardOpen) {
+                        isKeyboardOpen = false;
+                        chatRoom.style.height = '';
+                    }
+                    window.scrollTo(0, 1);
+                    setTimeout(() => {
+                        window.scrollTo(0, 0);
+                    }, 50);
+                }, 50);
             });
         }
 
