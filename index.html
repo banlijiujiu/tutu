@@ -215,7 +215,7 @@
         /* 锁屏键盘区域 */
         .lock-screen .keypad {
             margin-top: auto;
-            padding-bottom: calc(30px + env(safe-area-inset-bottom));
+            padding-bottom: 30px;
         }
 
         .lock-screen.hidden {
@@ -318,10 +318,7 @@
             background: url('https://img.heliar.top/file/1779644677302_IMG_2447.png') center center / cover no-repeat;
             display: flex;
             flex-direction: column;
-            padding: calc(45px + constant(safe-area-inset-top)) 15px 0 15px;
-            padding: calc(45px + env(safe-area-inset-top)) 15px 0 15px;
-            padding-bottom: constant(safe-area-inset-bottom);
-            padding-bottom: env(safe-area-inset-bottom);
+            padding: calc(45px + env(safe-area-inset-top)) 15px 15px 15px;
             position: absolute;
             top: 0;
             left: 0;
@@ -2275,8 +2272,6 @@
             padding: 10px 5px;
             backdrop-filter: blur(15px);
             margin-top: auto;
-            margin-bottom: constant(safe-area-inset-bottom);
-            margin-bottom: env(safe-area-inset-bottom);
         }
 
         .dock .app-icon-bg {
@@ -2735,8 +2730,6 @@
             flex: 1;
             overflow-y: auto;
             padding-top: 8px;
-            padding-bottom: constant(safe-area-inset-bottom);
-            padding-bottom: env(safe-area-inset-bottom);
             -webkit-overflow-scrolling: touch;
         }
 
@@ -7248,7 +7241,7 @@
 
         .wechat-chat-room-input-area {
             background: #F7F7F7;
-            padding: 8px 12px calc(8px + env(safe-area-inset-bottom)) 12px;
+            padding: 8px 12px;
             border-top: 0.5px solid #ECECEC;
             flex-shrink: 0;
             position: relative;
@@ -11434,8 +11427,8 @@ AI应表现出"正在操作手机"的质感。所有的互动必须基于"屏幕
         })();
 
         // ========== 全局版本号配置 ==========
-        // 固定版本号为 0.1.13
-        const APP_VERSION = '0.1.13';
+        // 固定版本号为 0.1.14
+        const APP_VERSION = '0.1.14';
         
         // ========== 数据管理页面 ==========
         // 自动更新页面上的版本号显示
