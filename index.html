@@ -5638,13 +5638,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            height: 100vh;
-            height: 100dvh;
             background-color: #EDEDED;
             z-index: 90;
             display: none;
             flex-direction: column;
             overflow: hidden;
+            /* iOS键盘适配：使用transform避免重绘 */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
 
         .wechat-chat-room.open {
@@ -6722,7 +6723,6 @@
             background: #EDEDED;
             min-height: 0;
             overscroll-behavior: contain;
-            transition: margin-bottom 0.3s ease;
         }
 
         .wechat-chat-room-messages::-webkit-scrollbar { display: none; }
@@ -11503,7 +11503,7 @@ AI应表现出"正在操作手机"的质感。所有的互动必须基于"屏幕
 
         // ========== 全局版本号配置 ==========
         // 固定版本号为 0.1.4
-        const APP_VERSION = '0.1.5';
+        const APP_VERSION = '0.1.6';
         
         // ========== 数据管理页面 ==========
         // 自动更新页面上的版本号显示
@@ -14510,77 +14510,75 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
             if (e.key === 'Enter') sendMessage();
         });
 
-        // 修复移动端键盘弹出时的黑屏问题
+        // 修复iOS键盘弹出时的黑屏问题 - 终极方案
         const chatRoomInput = document.getElementById('chatRoomInput');
         const chatRoomMessages = document.getElementById('chatRoomMessages');
+        const chatRoom = document.querySelector('.wechat-chat-room');
         
-        // iOS键盘适配 - 使用可靠的方案
-        let keyboardHeight = 0;
-        
-        function updateKeyboardLayout() {
-            if (!window.visualViewport) return;
+        // iOS专用键盘处理
+        if (window.visualViewport && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
+            let isKeyboardOpen = false;
             
-            const viewportHeight = window.visualViewport.height;
-            const newKeyboardHeight = window.innerHeight - viewportHeight;
-            const messagesEl = document.getElementById('chatRoomMessages');
-            
-            if (!messagesEl) return;
-            
-            if (newKeyboardHeight > 100) {
-                // 键盘弹出
-                keyboardHeight = newKeyboardHeight;
+            // 监听视口变化
+            window.visualViewport.addEventListener('resize', () => {
+                const vvHeight = window.visualViewport.height;
+                const windowHeight = window.innerHeight;
+                const keyboardHeight = windowHeight - vvHeight;
                 
-                // 使用margin-bottom将消息区域上移，而不是padding
-                messagesEl.style.marginBottom = keyboardHeight + 'px';
-                
-                // 滚动到底部
-                setTimeout(() => {
-                    messagesEl.scrollTop = messagesEl.scrollHeight;
-                }, 100);
-            } else {
-                // 键盘收起
-                keyboardHeight = 0;
-                messagesEl.style.marginBottom = '0';
-            }
-        }
-        
-        chatRoomInput.addEventListener('focus', () => {
-            // 延迟执行，等待键盘完全弹出
-            setTimeout(() => {
-                updateKeyboardLayout();
-                
-                // 监听viewport变化
-                if (window.visualViewport) {
-                    window.visualViewport.addEventListener('resize', updateKeyboardLayout);
+                if (keyboardHeight > 150 && !isKeyboardOpen) {
+                    // 键盘刚弹出
+                    isKeyboardOpen = true;
+                    
+                    // 关键：调整聊天容器高度为可视区域高度
+                    chatRoom.style.height = vvHeight + 'px';
+                    chatRoom.style.maxHeight = vvHeight + 'px';
+                    
+                    // 滚动消息到底部
+                    setTimeout(() => {
+                        chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
+                    }, 50);
+                    
+                } else if (keyboardHeight <= 150 && isKeyboardOpen) {
+                    // 键盘刚收起
+                    isKeyboardOpen = false;
+                    
+                    // 恢复原始高度
+                    chatRoom.style.height = '100%';
+                    chatRoom.style.maxHeight = '';
+                    
+                    setTimeout(() => {
+                        window.scrollTo(0, 0);
+                        chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
+                    }, 50);
                 }
-            }, 300);
+            });
             
-            // 延迟滚动到底部
-            setTimeout(() => {
-                chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
-            }, 400);
-        });
-        
-        chatRoomInput.addEventListener('blur', () => {
-            // 移除监听
-            if (window.visualViewport) {
-                window.visualViewport.removeEventListener('resize', updateKeyboardLayout);
-            }
+            // focus时确保处理
+            chatRoomInput.addEventListener('focus', () => {
+                setTimeout(() => {
+                    const vvHeight = window.visualViewport.height;
+                    const windowHeight = window.innerHeight;
+                    const keyboardHeight = windowHeight - vvHeight;
+                    
+                    if (keyboardHeight > 150) {
+                        isKeyboardOpen = true;
+                        chatRoom.style.height = vvHeight + 'px';
+                        chatRoom.style.maxHeight = vvHeight + 'px';
+                        chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
+                    }
+                }, 300);
+            });
             
-            // 恢复布局
-            const messagesEl = document.getElementById('chatRoomMessages');
-            if (messagesEl) {
-                messagesEl.style.marginBottom = '0';
-            }
-            
-            keyboardHeight = 0;
-            
-            // 恢复滚动位置
-            setTimeout(() => {
-                window.scrollTo(0, 0);
-                chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
-            }, 100);
-        });
+            // blur时恢复
+            chatRoomInput.addEventListener('blur', () => {
+                setTimeout(() => {
+                    isKeyboardOpen = false;
+                    chatRoom.style.height = '100%';
+                    chatRoom.style.maxHeight = '';
+                    window.scrollTo(0, 0);
+                }, 100);
+            });
+        }
 
         // 关闭引用预览
         document.getElementById('quotePreviewClose')?.addEventListener('click', () => {
