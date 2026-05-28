@@ -5,7 +5,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover, user-scalable=no, interactive-widget=resizes-content">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover, user-scalable=no">
     
     <!-- iOS PWA全屏配置（必须在所有link之前） -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -62,11 +62,14 @@
                 margin-top: 0;
             }
             
-            /* 锁屏界面延伸到状态栏 */
+            /* 锁屏界面延伸到状态栏 - 壁纸全屏 */
             .lock-screen {
-                padding-top: 0 !important;
-                margin-top: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
                 top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
             }
         }
         
@@ -93,12 +96,16 @@
         }
 
         html {
-            width: 100%;
-            height: 100%;
-            min-height: 100%;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            min-height: 100vh;
+            min-height: 100dvh;
             overflow: hidden;
             -webkit-text-size-adjust: 100%;
             background: #000;
+            padding: 0;
+            margin: 0;
         }
         
         .ios-standalone {
@@ -192,8 +199,8 @@
             min-height: 100vh;
             min-height: 100dvh;
             background-color: #f2f2f7;
-            background-image: url('https://img.heliar.top/file/1779860853179_IMG_2637.jpeg');
-            background-position: center center;
+            background-image: none;
+            background-position: center top;
             background-size: cover;
             background-repeat: no-repeat;
             display: flex;
@@ -212,8 +219,6 @@
             will-change: opacity;
             overflow: hidden;
             box-sizing: border-box;
-            padding-bottom: constant(safe-area-inset-bottom);
-            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .lock-screen.hidden {
@@ -313,7 +318,7 @@
         .home-screen {
             width: 100%;
             height: 100%;
-            background: url('https://img.heliar.top/file/1779860882296_IMG_2448.jpeg') center center / cover no-repeat;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             flex-direction: column;
             padding: calc(45px + constant(safe-area-inset-top)) 15px 0 15px;
@@ -6717,8 +6722,7 @@
             background: #EDEDED;
             min-height: 0;
             overscroll-behavior: contain;
-            max-height: calc(100vh - 120px);
-            max-height: calc(100dvh - 120px);
+            transition: padding-bottom 0.2s ease;
         }
 
         .wechat-chat-room-messages::-webkit-scrollbar { display: none; }
@@ -7255,12 +7259,7 @@
             flex-shrink: 0;
             position: relative;
             z-index: 10;
-        }
-        
-        /* iOS键盘弹出时输入区域适配 */
-        .wechat-chat-room.keyboard-open .wechat-chat-room-input-area {
-            position: relative;
-            bottom: 0;
+            transition: transform 0.2s ease;
         }
 
         /* +号弹出菜单 */
@@ -7533,7 +7532,7 @@
         <div class="screen">
             <!-- 锁屏界面 -->
             <div class="lock-screen" id="lockScreen">
-                <div style="display:flex;flex-direction:column;align-items:center;padding-top:calc(40px + env(safe-area-inset-top));">
+                <div style="display:flex;flex-direction:column;align-items:center;padding-top:calc(60px + env(safe-area-inset-top));">
                     <div class="lock-time" id="lockTime">12:00</div>
                     <div class="lock-date" id="lockDate">1月1日 星期一</div>
                     <div class="lock-hint">输入密码解锁</div>
@@ -7564,7 +7563,7 @@
             <div class="home-screen" id="homeScreen">
                 <!-- 顶部大图 -->
                 <div class="top-widget" id="topWidget">
-                    <img src="https://img.heliar.top/file/1779095122414_IMG_2269.jpeg" alt="顶部图片" id="topImage" onerror="this.style.display='none'">
+                    <div id="topImage" style="width:100%;height:100%;background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%);border-radius:20px;"></div>
                     <span class="change-hint">点击更换</span>
                 </div>
 
@@ -7572,50 +7571,48 @@
                 <div class="apps-area">
                     <!-- 第一排 -->
                     <div class="app-icon wechat pos-row1-col1">
-                        <div class="app-icon-bg"><img src="https://img.heliar.top/file/1779096430568_IMG_2273.jpeg" alt="微信" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" onerror="this.style.display='none'"></div>
+                        <div class="app-icon-bg" style="background:linear-gradient(135deg, #07C160 0%, #05a050 100%);"></div>
                         <span class="app-name">微信</span>
                     </div>
                     <div class="app-icon weibo pos-row1-col2">
-                        <div class="app-icon-bg"><img src="https://img.heliar.top/file/1779096606525_IMG_2281.jpeg" alt="微博" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" onerror="this.style.display='none'"></div>
+                        <div class="app-icon-bg" style="background:linear-gradient(135deg, #E6162D 0%, #c41226 100%);"></div>
                         <span class="app-name">微博</span>
                     </div>
                     <!-- 右侧竖向长方形图片 -->
-                    <div class="changeable-image vertical pos-row1-col3" id="rightImage" style="grid-row: span 2;">
-                        <img src="https://img.heliar.top/file/1779095158632_IMG_2268.jpeg" alt="右侧图片" onerror="this.style.display='none'">
+                    <div class="changeable-image vertical pos-row1-col3" id="rightImage" style="grid-row: span 2;background:linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                         <span class="change-hint">更换</span>
                     </div>
 
                     <!-- 第二排 -->
                     <div class="app-icon meituan pos-row2-col1">
-                        <div class="app-icon-bg"><img src="https://img.heliar.top/file/1779096404401_IMG_2272.jpeg" alt="美团" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" onerror="this.style.display='none'"></div>
+                        <div class="app-icon-bg" style="background:linear-gradient(135deg, #FFD100 0%, #e6bc00 100%);"></div>
                         <span class="app-name">美团</span>
                     </div>
                     <div class="app-icon taobao pos-row2-col2">
-                        <div class="app-icon-bg"><img src="https://img.heliar.top/file/1779095876662_IMG_2279.jpeg" alt="淘宝" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" onerror="this.style.display='none'"></div>
+                        <div class="app-icon-bg" style="background:linear-gradient(135deg, #FF5000 0%, #FF7B00 100%);"></div>
                         <span class="app-name">淘宝</span>
                     </div>
 
                     <!-- 第三排 -->
-                    <div class="changeable-image vertical pos-row3-col1" id="leftImage" style="grid-row: span 2;">
-                        <img src="https://img.heliar.top/file/1779120420329_IMG_2306.jpeg" alt="左下角图片" onerror="this.style.display='none'">
+                    <div class="changeable-image vertical pos-row3-col1" id="leftImage" style="grid-row: span 2;background:linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
                         <span class="change-hint">更换</span>
                     </div>
                     <div class="app-icon settings pos-row3-col2">
-                        <div class="app-icon-bg"><img src="https://img.heliar.top/file/1779096291104_IMG_2274.jpeg" alt="设置" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" onerror="this.style.display='none'"></div>
+                        <div class="app-icon-bg" style="background:linear-gradient(135deg, #8E8E93 0%, #636366 100%);"></div>
                         <span class="app-name">设置</span>
                     </div>
                     <div class="app-icon worldbook pos-row3-col3">
-                        <div class="app-icon-bg"><img src="https://img.heliar.top/file/1779096272155_IMG_2275.jpeg" alt="世界书" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" onerror="this.style.display='none'"></div>
+                        <div class="app-icon-bg" style="background:linear-gradient(135deg, #5856D6 0%, #3634a3 100%);"></div>
                         <span class="app-name">世界书</span>
                     </div>
 
                     <!-- 第四排 -->
                     <div class="app-icon beautify" style="grid-column: 2; grid-row: 4;">
-                        <div class="app-icon-bg"><img src="https://img.heliar.top/file/1779096251713_IMG_2276.jpeg" alt="美化" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" onerror="this.style.display='none'"></div>
+                        <div class="app-icon-bg" style="background:linear-gradient(135deg, #FF6B6B 0%, #ee5a5a 100%);"></div>
                         <span class="app-name">美化</span>
                     </div>
                     <div class="app-icon checkphone" style="grid-column: 3; grid-row: 4;">
-                        <div class="app-icon-bg"><img src="https://img.heliar.top/file/1779096130457_IMG_2277.jpeg" alt="查手机" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" onerror="this.style.display='none'"></div>
+                        <div class="app-icon-bg" style="background:linear-gradient(135deg, #4ECDC4 0%, #3dbdb5 100%);"></div>
                         <span class="app-name">查手机</span>
                     </div>
                 </div>
@@ -7623,19 +7620,19 @@
                 <!-- 底栏 Dock -->
                 <div class="dock">
                     <div class="app-icon phone">
-                        <div class="app-icon-bg"><img src="https://img.heliar.top/file/1779096109365_IMG_2278.jpeg" alt="电话" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" onerror="this.style.display='none'"></div>
+                        <div class="app-icon-bg" style="background:linear-gradient(135deg, #34C759 0%, #2aa846 100%);"></div>
                         <span class="app-name">电话</span>
                     </div>
                     <div class="app-icon message">
-                        <div class="app-icon-bg"><img src="https://img.heliar.top/file/1779120394925_IMG_2308.jpeg" alt="短信" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" onerror="this.style.display='none'"></div>
+                        <div class="app-icon-bg" style="background:linear-gradient(135deg, #007AFF 0%, #0056b3 100%);"></div>
                         <span class="app-name">短信</span>
                     </div>
                     <div class="app-icon browser">
-                        <div class="app-icon-bg"><img src="https://img.heliar.top/file/1779120357399_IMG_2305.jpeg" alt="浏览器" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" onerror="this.style.display='none'"></div>
+                        <div class="app-icon-bg" style="background:linear-gradient(135deg, #AF52DE 0%, #8a3eb5 100%);"></div>
                         <span class="app-name">浏览器</span>
                     </div>
                     <div class="app-icon music">
-                        <div class="app-icon-bg"><img src="https://img.heliar.top/file/1779092607452_IMG_2263.jpeg" alt="音乐" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" onerror="this.style.display='none'"></div>
+                        <div class="app-icon-bg" style="background:linear-gradient(135deg, #FF3B30 0%, #d62e24 100%);"></div>
                         <span class="app-name">音乐</span>
                     </div>
                 </div>
@@ -9065,8 +9062,7 @@
                     <!-- 主屏幕壁纸 -->
                     <div class="wallpaper-section">
                         <div class="wallpaper-section-title">主屏幕壁纸</div>
-                        <div class="wallpaper-preview" id="wpHomePreview">
-                            <img id="wpHomeImg" src="https://img.heliar.top/file/1779860882296_IMG_2448.jpeg" alt="主屏幕壁纸" onerror="this.style.display='none'">
+                        <div class="wallpaper-preview" id="wpHomePreview" style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                             <span class="wp-label">主屏幕</span>
                             <span class="wp-hint">点击更换</span>
                         </div>
@@ -9075,8 +9071,7 @@
                     <!-- 锁屏壁纸 -->
                     <div class="wallpaper-section">
                         <div class="wallpaper-section-title">锁屏壁纸</div>
-                        <div class="wallpaper-preview" id="wpLockPreview">
-                            <img id="wpLockImg" src="https://img.heliar.top/file/1779860853179_IMG_2637.jpeg" alt="锁屏壁纸" onerror="this.style.display='none'">
+                        <div class="wallpaper-preview" id="wpLockPreview" style="background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                             <span class="wp-label">锁屏</span>
                             <span class="wp-hint">点击更换</span>
                         </div>
@@ -10793,20 +10788,20 @@ AI应表现出"正在操作手机"的质感。所有的互动必须基于"屏幕
         }
 
         // ========== 美化页面 ==========
-        // 默认图标配置
+        // 默认图标配置 - 使用纯色渐变背景代替失效的图片链接
         const defaultIcons = {
-            wechat: 'https://img.heliar.top/file/1779096430568_IMG_2273.jpeg',
-            weibo: 'https://img.heliar.top/file/1779096606525_IMG_2281.jpeg',
-            meituan: 'https://img.heliar.top/file/1779096404401_IMG_2272.jpeg',
-            taobao: 'https://img.heliar.top/file/1779095876662_IMG_2279.jpeg',
-            settings: 'https://img.heliar.top/file/1779096291104_IMG_2274.jpeg',
-            worldbook: 'https://img.heliar.top/file/1779096272155_IMG_2275.jpeg',
-            beautify: 'https://img.heliar.top/file/1779096251713_IMG_2276.jpeg',
-            checkphone: 'https://img.heliar.top/file/1779096130457_IMG_2277.jpeg',
-            phone: 'https://img.heliar.top/file/1779096109365_IMG_2278.jpeg',
-            message: 'https://img.heliar.top/file/1779120394925_IMG_2308.jpeg',
-            browser: 'https://img.heliar.top/file/1779120357399_IMG_2305.jpeg',
-            music: 'https://img.heliar.top/file/1779092607452_IMG_2263.jpeg'
+            wechat: '',
+            weibo: '',
+            meituan: '',
+            taobao: '',
+            settings: '',
+            worldbook: '',
+            beautify: '',
+            checkphone: '',
+            phone: '',
+            message: '',
+            browser: '',
+            music: ''
         };
 
         const iconNames = {
@@ -11506,7 +11501,7 @@ AI应表现出"正在操作手机"的质感。所有的互动必须基于"屏幕
 
         // ========== 全局版本号配置 ==========
         // 固定版本号为 0.1.4
-        const APP_VERSION = '0.1.4';
+        const APP_VERSION = '0.1.5';
         
         // ========== 数据管理页面 ==========
         // 自动更新页面上的版本号显示
@@ -13101,6 +13096,7 @@ AI应表现出"正在操作手机"的质感。所有的互动必须基于"屏幕
             
             if (messages.length === 0) {
                 messagesEl.innerHTML = '<div style="text-align:center;padding:40px;color:#999;font-size:14px;">暂无消息，开始聊天吧</div>';
+                isRenderingMessages = false;
                 return;
             }
             
@@ -14514,35 +14510,75 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
         const chatRoomInput = document.getElementById('chatRoomInput');
         const chatRoomMessages = document.getElementById('chatRoomMessages');
         
-        // iOS键盘适配 - 使用更可靠的方案
-        let keyboardHandler = null;
+        // iOS键盘适配 - 使用position: fixed方案
+        let keyboardHeight = 0;
+        let originalViewportHeight = window.innerHeight;
         
-        function handleKeyboardShow() {
-            // 获取键盘高度
-            const keyboardHeight = window.innerHeight - window.visualViewport.height;
+        function updateKeyboardLayout() {
+            if (!window.visualViewport) return;
+            
+            const viewportHeight = window.visualViewport.height;
+            const newKeyboardHeight = window.innerHeight - viewportHeight;
             const chatRoom = document.querySelector('.wechat-chat-room');
-            const inputArea = document.querySelector('.wechat-chat-room-input-area');
             const messagesEl = document.getElementById('chatRoomMessages');
+            const inputArea = document.querySelector('.wechat-chat-room-input-area');
             
-            if (!chatRoom || !messagesEl) return;
+            if (!chatRoom || !messagesEl || !inputArea) return;
             
-            // 设置底部padding为键盘高度，让输入框上移
-            if (inputArea) {
+            if (newKeyboardHeight > 100) {
+                // 键盘弹出
+                keyboardHeight = newKeyboardHeight;
+                
+                // 调整消息区域底部padding，为键盘留出空间
+                messagesEl.style.paddingBottom = (keyboardHeight + 80) + 'px';
+                
+                // 确保输入框在可视区域
                 inputArea.style.position = 'relative';
-                inputArea.style.bottom = '0';
+                
+                // 滚动到底部
+                setTimeout(() => {
+                    messagesEl.scrollTop = messagesEl.scrollHeight;
+                }, 50);
+            } else {
+                // 键盘收起
+                keyboardHeight = 0;
+                messagesEl.style.paddingBottom = '16px';
+                inputArea.style.position = '';
             }
-            
-            // 调整消息区域，确保消息可见
-            setTimeout(() => {
-                messagesEl.scrollTop = messagesEl.scrollHeight;
-            }, 100);
         }
         
-        function handleKeyboardHide() {
+        chatRoomInput.addEventListener('focus', () => {
+            // 记录原始高度
+            originalViewportHeight = window.innerHeight;
+            
+            // 立即更新布局
+            setTimeout(updateKeyboardLayout, 50);
+            
+            // 监听viewport变化
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', updateKeyboardLayout);
+            }
+            
+            // 延迟滚动到底部
+            setTimeout(() => {
+                chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
+            }, 200);
+        });
+        
+        chatRoomInput.addEventListener('blur', () => {
+            // 移除监听
+            if (window.visualViewport) {
+                window.visualViewport.removeEventListener('resize', updateKeyboardLayout);
+            }
+            
+            // 恢复布局
+            const messagesEl = document.getElementById('chatRoomMessages');
             const inputArea = document.querySelector('.wechat-chat-room-input-area');
+            if (messagesEl) {
+                messagesEl.style.paddingBottom = '16px';
+            }
             if (inputArea) {
                 inputArea.style.position = '';
-                inputArea.style.bottom = '';
             }
             
             // 恢复滚动位置
@@ -14550,35 +14586,6 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
                 window.scrollTo(0, 0);
                 chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
             }, 100);
-        }
-        
-        chatRoomInput.addEventListener('focus', () => {
-            // iOS键盘弹出时
-            if (window.visualViewport) {
-                // 初始处理
-                setTimeout(handleKeyboardShow, 100);
-                
-                // 监听viewport变化
-                keyboardHandler = () => {
-                    handleKeyboardShow();
-                };
-                window.visualViewport.addEventListener('resize', keyboardHandler);
-            }
-            
-            // 延迟滚动到底部
-            setTimeout(() => {
-                chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
-            }, 300);
-        });
-        
-        chatRoomInput.addEventListener('blur', () => {
-            // 移除监听
-            if (window.visualViewport && keyboardHandler) {
-                window.visualViewport.removeEventListener('resize', keyboardHandler);
-                keyboardHandler = null;
-            }
-            
-            handleKeyboardHide();
         });
 
         // 关闭引用预览
