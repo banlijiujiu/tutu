@@ -38,20 +38,14 @@
             --vw: 1vw;
         }
         
-        /* iOS特定修复 */
+        /* iOS特定修复 - 使用固定高度，不使用动态变量 */
         @supports (-webkit-touch-callout: none) {
-            :root {
-                --vh: calc(100vh / 100);
-            }
-            
             html, body {
                 min-height: 100vh;
-                min-height: calc(var(--vh, 1vh) * 100);
             }
             
             .phone-container {
                 min-height: 100vh;
-                min-height: calc(var(--vh, 1vh) * 100);
             }
         }
         
@@ -98,9 +92,8 @@
         html {
             width: 100vw;
             height: 100vh;
-            height: 100dvh;
+            /* 移除100dvh，使用固定高度避免键盘弹出时黑屏 */
             min-height: 100vh;
-            min-height: 100dvh;
             overflow: hidden;
             -webkit-text-size-adjust: 100%;
             background: #000;
@@ -115,16 +108,10 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: #000;
-            /* 关键：--vh变量必须放在最后，否则会被后面的值覆盖 */
             width: 100vw;
             height: 100vh;
-            height: 100dvh;
-            height: -webkit-fill-available;
-            height: calc(var(--vh, 1vh) * 100);
+            /* 移除100dvh，使用固定高度避免键盘弹出时黑屏 */
             min-height: 100vh;
-            min-height: 100dvh;
-            min-height: -webkit-fill-available;
-            min-height: calc(var(--vh, 1vh) * 100);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -148,13 +135,8 @@
         .phone-container {
             width: 100vw;
             height: 100vh;
-            height: 100dvh;
-            height: -webkit-fill-available;
-            height: calc(var(--vh, 1vh) * 100);
+            /* 移除100dvh，使用固定高度避免键盘弹出时黑屏 */
             min-height: 100vh;
-            min-height: 100dvh;
-            min-height: -webkit-fill-available;
-            min-height: calc(var(--vh, 1vh) * 100);
             background: #000;
             border-radius: 0;
             padding: 0;
@@ -176,7 +158,7 @@
         .screen {
             width: 100vw;
             height: 100vh;
-            height: 100dvh;
+            /* 移除100dvh，使用固定高度避免键盘弹出时黑屏 */
             background: #000;
             border-radius: 0;
             overflow: hidden;
@@ -195,9 +177,8 @@
         .lock-screen {
             width: 100vw;
             height: 100vh;
-            height: 100dvh;
+            /* 移除100dvh，使用固定高度避免键盘弹出时黑屏 */
             min-height: 100vh;
-            min-height: 100dvh;
             background-color: #f2f2f7;
             background-image: url('https://img.heliar.top/file/1779860853179_IMG_2637.jpeg');
             background-position: center top;
@@ -5638,7 +5619,7 @@
             left: 0;
             width: 100%;
             height: 100vh;
-            height: 100dvh;
+            /* 移除100dvh，使用固定高度避免键盘弹出时黑屏 */
             background-color: #EDEDED;
             z-index: 90;
             display: none;
@@ -7419,7 +7400,7 @@
         }
     </script>
 
-    <!-- iOS PWA 全屏修复 - 必须在head中尽早执行 -->
+    <!-- iOS PWA 全屏修复 - 极简方案：固定高度，不随键盘变化 -->
     <script>
         (function() {
             var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -7430,128 +7411,35 @@
                 document.documentElement.classList.add('ios-standalone');
             }
             
-            // 存储原始视口高度（键盘未弹出时）
-            var originalViewportHeight = window.innerHeight;
-            var isKeyboardVisible = false;
-            
-            // iOS Safari 视口高度修复
-            function fixViewport() {
-                // iOS PWA standalone模式下，visualViewport和innerHeight相同
-                // 但浏览器模式下，visualViewport不含工具栏
-                var height;
-                var currentViewportHeight;
-                
-                if (isStandalone) {
-                    // iOS PWA模式：直接使用innerHeight
-                    height = window.innerHeight;
-                    currentViewportHeight = window.innerHeight;
-                } else if (window.visualViewport) {
-                    // 浏览器模式：使用visualViewport（不含工具栏）
-                    currentViewportHeight = window.visualViewport.height;
-                    
-                    // 检测键盘是否弹出：如果visualViewport高度明显小于innerHeight，说明键盘弹出了
-                    // iOS键盘弹出时，visualViewport.height会减少约200-300px
-                    var keyboardThreshold = 150; // 阈值，用于判断键盘是否弹出
-                    isKeyboardVisible = (window.innerHeight - currentViewportHeight) > keyboardThreshold;
-                    
-                    if (isKeyboardVisible) {
-                        // 键盘弹出时，保持原始高度，避免黑屏
-                        // 但更新CSS变量让输入区域可以正确滚动
-                        height = originalViewportHeight;
-                    } else {
-                        // 键盘未弹出时，更新原始高度并正常使用
-                        originalViewportHeight = currentViewportHeight;
-                        height = currentViewportHeight;
-                    }
-                } else {
-                    height = window.innerHeight;
-                    currentViewportHeight = window.innerHeight;
-                }
-                
+            // 只设置一次初始高度，之后不再改变
+            // 这是解决键盘黑屏的关键：不让JavaScript在键盘弹出时调整任何高度
+            function initViewport() {
+                var height = window.innerHeight;
                 var width = window.innerWidth;
-                
-                // 使用当前视口高度计算vh（用于输入区域定位）
-                var vh = currentViewportHeight * 0.01;
+                var vh = height * 0.01;
                 var vw = width * 0.01;
                 
                 document.documentElement.style.setProperty('--vh', vh + 'px');
                 document.documentElement.style.setProperty('--vw', vw + 'px');
                 
-                // 强制设置所有容器高度（加null检查）
-                // 关键修复：键盘弹出时保持原始高度，不缩小
+                // 只在初始化时设置一次高度
                 if (document.body) {
                     document.body.style.height = height + 'px';
-                    // 确保背景色正确
-                    document.body.style.backgroundColor = '#000';
                 }
                 
                 var container = document.querySelector('.phone-container');
                 if (container) {
                     container.style.height = height + 'px';
-                    container.style.backgroundColor = '#000';
-                }
-                
-                var screen = document.querySelector('.screen');
-                if (screen) {
-                    screen.style.height = '100%';
-                    screen.style.backgroundColor = '#000';
-                }
-                
-                var lockScreen = document.querySelector('.lock-screen');
-                if (lockScreen) {
-                    lockScreen.style.height = '100%';
                 }
             }
             
-            // 立即执行
-            fixViewport();
+            // 只在页面加载时执行一次
+            initViewport();
             
-            // 多次延迟执行确保生效
-            setTimeout(fixViewport, 10);
-            setTimeout(fixViewport, 50);
-            setTimeout(fixViewport, 100);
-            setTimeout(fixViewport, 300);
-            setTimeout(fixViewport, 500);
-            
-            // 监听事件
-            window.addEventListener('resize', fixViewport);
+            // 方向改变时重新计算（这是唯一需要重新计算的情况）
             window.addEventListener('orientationchange', function() {
-                fixViewport();
-                setTimeout(fixViewport, 100);
-                setTimeout(fixViewport, 300);
-                setTimeout(fixViewport, 500);
+                setTimeout(initViewport, 300);
             });
-            
-            // visualViewport监听
-            if (window.visualViewport) {
-                window.visualViewport.addEventListener('resize', fixViewport);
-            }
-            
-            // 页面加载完成
-            window.addEventListener('load', function() {
-                fixViewport();
-                setTimeout(fixViewport, 100);
-                setTimeout(fixViewport, 300);
-                setTimeout(fixViewport, 500);
-                setTimeout(fixViewport, 1000);
-            });
-            
-            // DOMContentLoaded
-            document.addEventListener('DOMContentLoaded', function() {
-                fixViewport();
-                setTimeout(fixViewport, 100);
-            });
-            
-            // iOS PWA特殊处理
-            if (isStandalone) {
-                fixViewport();
-                setTimeout(fixViewport, 10);
-                setTimeout(fixViewport, 50);
-                setTimeout(fixViewport, 100);
-                setTimeout(fixViewport, 300);
-                setTimeout(fixViewport, 500);
-                setTimeout(fixViewport, 1000);
-            }
         })();
     </script>
 </head>
@@ -14575,42 +14463,8 @@ ${todayFestival ? `🎉 节日：今天是${todayFestival}！` : ''}
             if (e.key === 'Enter') sendMessage();
         });
 
-        // iOS键盘适配 - 使用visualViewport动态设置高度
-        const chatRoomInput = document.getElementById('chatRoomInput');
-        const chatRoomMessages = document.getElementById('chatRoomMessages');
-        const chatRoomEl = document.getElementById('wechatChatRoom');
-        
-        if (window.visualViewport) {
-            // 键盘弹出时，将聊天容器高度设为visualViewport的高度
-            function onViewportResize() {
-                const vv = window.visualViewport;
-                chatRoomEl.style.height = vv.height + 'px';
-                // 滚动消息到底部
-                setTimeout(function() {
-                    chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
-                }, 30);
-            }
-            
-            window.visualViewport.addEventListener('resize', onViewportResize);
-            window.visualViewport.addEventListener('scroll', onViewportResize);
-            
-            chatRoomInput.addEventListener('focus', function() {
-                // 立即设置高度，不等键盘动画
-                onViewportResize();
-                // 键盘动画完成后再次设置
-                setTimeout(onViewportResize, 100);
-                setTimeout(onViewportResize, 300);
-            });
-            
-            chatRoomInput.addEventListener('blur', function() {
-                // 恢复为100dvh
-                setTimeout(function() {
-                    chatRoomEl.style.height = '';
-                    window.scrollTo(0, 0);
-                    chatRoomMessages.scrollTop = chatRoomMessages.scrollHeight;
-                }, 50);
-            });
-        }
+        // iOS键盘适配 - 已删除visualViewport监听，避免黑屏问题
+        // 键盘弹出时不再动态调整高度，页面保持固定大小
 
         // 关闭引用预览
         document.getElementById('quotePreviewClose')?.addEventListener('click', () => {
