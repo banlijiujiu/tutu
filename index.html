@@ -303,7 +303,7 @@
             display: flex;
             flex-direction: column;
             padding: calc(45px + env(safe-area-inset-top)) 15px 0 15px;
-            padding-bottom: env(safe-area-inset-bottom);
+            padding-bottom: 15px;
             position: absolute;
             top: 0;
             left: 0;
@@ -955,7 +955,7 @@
             display: flex;
             justify-content: space-around;
             background: #fff;
-            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+            padding: 8px 0 15px;
             border-top: 1px solid #f0f0f0;
         }
         .meituan-bottom-item {
@@ -1711,7 +1711,7 @@
             display: flex;
             justify-content: space-around;
             background: #fff;
-            padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+            padding: 6px 0 15px;
             border-top: 0.5px solid #f0f0f0;
             position: absolute;
             bottom: 0;
@@ -2257,7 +2257,7 @@
             padding: 10px 5px;
             backdrop-filter: blur(15px);
             margin-top: auto;
-            margin-bottom: env(safe-area-inset-bottom);
+            margin-bottom: 15px;
         }
 
         .dock .app-icon-bg {
@@ -2716,7 +2716,7 @@
             flex: 1;
             overflow-y: auto;
             padding-top: 8px;
-            padding-bottom: env(safe-area-inset-bottom);
+            padding-bottom: 15px;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -5967,7 +5967,7 @@
             border-color: #95EC69;
         }
         .wechat-offline-input-area {
-            padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+            padding: 12px 16px 15px;
             background: #fff;
             border-top: 1px solid #FFD6D6;
         }
@@ -7228,7 +7228,7 @@
 
         .wechat-chat-room-input-area {
             background: #F7F7F7;
-            padding: 8px 12px calc(8px + env(safe-area-inset-bottom)) 12px;
+            padding: 8px 12px 15px 12px;
             border-top: 0.5px solid #ECECEC;
             flex-shrink: 0;
             position: relative;
@@ -7455,7 +7455,7 @@
                         <div class="passcode-dot" id="dot4"></div>
                     </div>
                 </div>
-                <div class="keypad" style="padding-bottom:calc(30px + env(safe-area-inset-bottom));">
+                <div class="keypad" style="padding-bottom:20px;">
                     <button class="key" data-num="1">1</button>
                     <button class="key" data-num="2">2<span class="letters">ABC</span></button>
                     <button class="key" data-num="3">3<span class="letters">DEF</span></button>
@@ -11414,8 +11414,8 @@ AI应表现出"正在操作手机"的质感。所有的互动必须基于"屏幕
         })();
 
         // ========== 全局版本号配置 ==========
-        // 固定版本号为 0.1.15
-        const APP_VERSION = '0.1.15';
+        // 固定版本号为 0.1.16
+        const APP_VERSION = '0.1.16';
         
         // ========== 数据管理页面 ==========
         // 自动更新页面上的版本号显示
