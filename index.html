@@ -303,7 +303,7 @@
             display: flex;
             flex-direction: column;
             padding: calc(45px + env(safe-area-inset-top)) 15px 0 15px;
-            padding-bottom: 30px;
+            padding-bottom: calc(30px + env(safe-area-inset-bottom, 0px));
             position: absolute;
             top: 0;
             left: 0;
@@ -955,7 +955,7 @@
             display: flex;
             justify-content: space-around;
             background: #fff;
-            padding: 8px 0 70px;
+            padding: 8px 0 calc(70px + env(safe-area-inset-bottom, 0px));
             border-top: 1px solid #f0f0f0;
         }
         .meituan-bottom-item {
@@ -1232,7 +1232,7 @@
         .taobao-product-price-num::before { content:'¥'; font-size:12px; }
         .taobao-product-sold { font-size:11px; color:#999; }
         .taobao-product-tag { display:inline-block; font-size:10px; color:#FF5000; border:1px solid #FF5000; border-radius:2px; padding:0 3px; margin-right:4px; }
-        .taobao-bottom-nav { display:flex; justify-content:space-around; background:#fff; padding:4px 0 70px; border-top:0.5px solid #f0f0f0; position:absolute; bottom:0; left:0; right:0; }
+        .taobao-bottom-nav { display:flex; justify-content:space-around; background:#fff; padding:4px 0 calc(70px + env(safe-area-inset-bottom, 0px)); border-top:0.5px solid #f0f0f0; position:absolute; bottom:0; left:0; right:0; }
         .taobao-bottom-item { display:flex; flex-direction:column; align-items:center; gap:1px; cursor:pointer; padding:2px 0; }
         .taobao-bottom-item span { font-size:10px; color:#999; }
         .taobao-bottom-item.active span { color:#FF5000; font-weight:600; }
@@ -1711,7 +1711,7 @@
             display: flex;
             justify-content: space-around;
             background: #fff;
-            padding: 6px 0 70px;
+            padding: 6px 0 calc(70px + env(safe-area-inset-bottom, 0px));
             border-top: 0.5px solid #f0f0f0;
             position: absolute;
             bottom: 0;
@@ -2257,7 +2257,7 @@
             padding: 10px 5px;
             backdrop-filter: blur(15px);
             margin-top: auto;
-            margin-bottom: 25px;
+            margin-bottom: calc(25px + env(safe-area-inset-bottom, 0px));
         }
 
         .dock .app-icon-bg {
@@ -4303,12 +4303,11 @@
         /* 底部Tab栏 */
         .wechat-tab-bar {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-around;
-            height: 50px;
             background-color: #F7F7F7;
             border-top: 0.5px solid #D9D9D9;
-            padding-bottom: 70px;
+            padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
             flex-shrink: 0;
         }
 
@@ -4316,23 +4315,23 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             flex: 1;
             cursor: pointer;
-            padding: 4px 0;
+            padding: 6px 0 4px;
             position: relative;
         }
 
         .wechat-tab-icon {
             font-size: 24px;
             line-height: 1;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
 
         .wechat-tab-label {
             font-size: 10px;
             color: #999;
-            line-height: 1;
+            line-height: 1.2;
         }
 
         .wechat-tab-item.active .wechat-tab-label {
@@ -5967,7 +5966,7 @@
             border-color: #95EC69;
         }
         .wechat-offline-input-area {
-            padding: 12px 16px 55px;
+            padding: 12px 16px calc(55px + env(safe-area-inset-bottom, 0px));
             background: #fff;
             border-top: 1px solid #FFD6D6;
         }
@@ -6383,6 +6382,42 @@
             text-align: center;
             color: #999;
             padding: 40px;
+        }
+        .wechat-chat-settings-memory-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .wechat-chat-settings-memory-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+        }
+        .wechat-chat-settings-memory-btn:hover {
+            background: #f5f5f5;
+        }
+        .wechat-chat-settings-memory-btn.danger {
+            color: #FF3B30;
+            border-color: #FF3B30;
+        }
+        .wechat-chat-settings-memory-btn.danger:hover {
+            background: #FFE5E5;
+        }
+        .wechat-chat-settings-memory-edit-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.6;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 16px;
         }
         .wechat-offline-num-input::-webkit-inner-spin-button,
         .wechat-offline-num-input::-webkit-outer-spin-button {
@@ -7228,7 +7263,7 @@
 
         .wechat-chat-room-input-area {
             background: #F7F7F7;
-            padding: 8px 12px 55px 12px;
+            padding: 8px 12px calc(55px + env(safe-area-inset-bottom, 0px)) 12px;
             border-top: 0.5px solid #ECECEC;
             flex-shrink: 0;
             position: relative;
@@ -7455,7 +7490,7 @@
                         <div class="passcode-dot" id="dot4"></div>
                     </div>
                 </div>
-                <div class="keypad" style="padding-bottom:100px;">
+                <div class="keypad" style="padding-bottom:calc(100px + env(safe-area-inset-bottom, 0px));">
                     <button class="key" data-num="1">1</button>
                     <button class="key" data-num="2">2<span class="letters">ABC</span></button>
                     <button class="key" data-num="3">3<span class="letters">DEF</span></button>
@@ -9085,14 +9120,6 @@
                 </div>
             </div>
 
-            <!-- 搜索栏 -->
-            <div class="wechat-search">
-                <div class="wechat-search-bar">
-                    <span class="search-icon" style="font-size:13px;color:#888;">搜索</span>
-                    <input type="text" placeholder="">
-                </div>
-            </div>
-
             <!-- ===== 聊天列表 Tab ===== -->
             <div class="wechat-tab-content active" id="wechatTabChats">
                 <div class="wechat-chat-list" id="wechatChatList">
@@ -10200,11 +10227,28 @@
                         <div class="wechat-chat-settings-memory-tab active" data-tab="online">线上记忆</div>
                         <div class="wechat-chat-settings-memory-tab" data-tab="offline">线下记忆</div>
                     </div>
+                    <div class="wechat-chat-settings-memory-actions" id="chatSettingsMemoryActions" style="display:none;margin-bottom:10px;">
+                        <button class="wechat-chat-settings-memory-btn" id="chatSettingsMemoryEdit">编辑</button>
+                        <button class="wechat-chat-settings-memory-btn" id="chatSettingsMemoryDelete">删除</button>
+                        <button class="wechat-chat-settings-memory-btn danger" id="chatSettingsMemoryClear">清空</button>
+                    </div>
                     <div class="wechat-chat-settings-memory-content" id="chatSettingsMemoryContent">
                         <div class="wechat-chat-settings-memory-empty">暂无记忆总结</div>
                     </div>
                     <div class="wechat-offline-style-buttons">
                         <button class="wechat-offline-style-btn cancel" id="chatSettingsMemoryClose">关闭</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 记忆总结编辑弹窗 -->
+            <div class="wechat-offline-style-modal" id="chatSettingsMemoryEditModal">
+                <div class="wechat-offline-style-dialog" style="width:360px;">
+                    <div class="wechat-offline-style-title">编辑记忆总结</div>
+                    <textarea class="wechat-chat-settings-memory-edit-textarea" id="chatSettingsMemoryEditTextarea" placeholder="编辑记忆总结内容..."></textarea>
+                    <div class="wechat-offline-style-buttons">
+                        <button class="wechat-offline-style-btn cancel" id="chatSettingsMemoryEditCancel">取消</button>
+                        <button class="wechat-offline-style-btn confirm" id="chatSettingsMemoryEditSave">保存</button>
                     </div>
                 </div>
             </div>
@@ -11414,8 +11458,8 @@ AI应表现出"正在操作手机"的质感。所有的互动必须基于"屏幕
         })();
 
         // ========== 全局版本号配置 ==========
-        // 固定版本号为 0.1.23
-        const APP_VERSION = '0.1.23';
+        // 固定版本号为 0.1.25
+        const APP_VERSION = '0.1.27';
         
         // ========== 数据管理页面 ==========
         // 自动更新页面上的版本号显示
@@ -16738,21 +16782,29 @@ ${persona ? '你的人设：' + persona + '\n' : ''}TA刚刚发送了这样一�
             });
         });
 
+        // 当前选中的记忆类型
+        let currentMemoryType = 'online';
+        
         function updateMemoryContent(type, settings) {
             const content = document.getElementById('chatSettingsMemoryContent');
+            const actions = document.getElementById('chatSettingsMemoryActions');
             const memory = type === 'online' ? settings.onlineMemory : settings.offlineMemory;
+            currentMemoryType = type;
             
             // 调试日志
             console.log('updateMemoryContent called:', type, 'memory length:', memory ? memory.length : 0);
             
             if (memory && memory.trim()) {
                 // 检查是否只有时间戳没有实际内容
-                // 时间戳格式：[YYYY/MM/DD HH:mm:ss]
+                // 时间戳格式：[YYYY/MM/DD HH:mm:ss] 或 [2025/1/1 12:00:00]
                 const lines = memory.trim().split('\n');
                 let hasRealContent = false;
                 for (const line of lines) {
-                    // 跳过空行和时间戳行
-                    if (line.trim() && !line.match(/^\[\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}\]$/)) {
+                    // 跳过空行和时间戳行（支持多种时间格式）
+                    const trimmedLine = line.trim();
+                    if (trimmedLine && 
+                        !trimmedLine.match(/^\[\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}\s+\d{1,2}:\d{2}:\d{2}\]$/) &&
+                        !trimmedLine.match(/^\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}\s+\d{1,2}:\d{2}:\d{2}$/)) {
                         hasRealContent = true;
                         break;
                     }
@@ -16761,18 +16813,116 @@ ${persona ? '你的人设：' + persona + '\n' : ''}TA刚刚发送了这样一�
                 if (hasRealContent) {
                     // 使用textContent，CSS的white-space:pre-wrap会正确处理换行
                     content.textContent = memory;
+                    actions.style.display = 'flex';
                 } else {
                     // 只有时间戳没有内容，显示空状态
                     content.innerHTML = '<div class="wechat-chat-settings-memory-empty">记忆总结内容为空，请重新生成</div>';
+                    actions.style.display = 'none';
                 }
             } else {
                 content.innerHTML = '<div class="wechat-chat-settings-memory-empty">暂无' + (type === 'online' ? '线上' : '线下') + '记忆总结</div>';
+                actions.style.display = 'none';
             }
         }
 
         // 关闭记忆弹窗
         document.getElementById('chatSettingsMemoryClose')?.addEventListener('click', () => {
             document.getElementById('chatSettingsMemoryModal').classList.remove('open');
+        });
+
+        // 编辑记忆总结
+        document.getElementById('chatSettingsMemoryEdit')?.addEventListener('click', () => {
+            if (!currentChatSettingsContact) return;
+            const settings = getChatSettings(currentChatSettingsContact);
+            const memory = currentMemoryType === 'online' ? settings.onlineMemory : settings.offlineMemory;
+            
+            document.getElementById('chatSettingsMemoryEditTextarea').value = memory || '';
+            document.getElementById('chatSettingsMemoryEditModal').classList.add('open');
+        });
+
+        // 保存编辑的记忆总结
+        document.getElementById('chatSettingsMemoryEditSave')?.addEventListener('click', () => {
+            if (!currentChatSettingsContact) return;
+            const newContent = document.getElementById('chatSettingsMemoryEditTextarea').value.trim();
+            const settings = getChatSettings(currentChatSettingsContact);
+            
+            if (currentMemoryType === 'online') {
+                settings.onlineMemory = newContent;
+            } else {
+                settings.offlineMemory = newContent;
+            }
+            saveChatSettings(currentChatSettingsContact, settings);
+            
+            // 同时更新另一个（线上线下记忆互通）
+            if (currentMemoryType === 'online') {
+                settings.offlineMemory = newContent;
+            } else {
+                settings.onlineMemory = newContent;
+            }
+            saveChatSettings(currentChatSettingsContact, settings);
+            
+            document.getElementById('chatSettingsMemoryEditModal').classList.remove('open');
+            updateMemoryContent(currentMemoryType, settings);
+            alert('记忆总结已保存！');
+        });
+
+        // 取消编辑
+        document.getElementById('chatSettingsMemoryEditCancel')?.addEventListener('click', () => {
+            document.getElementById('chatSettingsMemoryEditModal').classList.remove('open');
+        });
+
+        // 删除最近一条记忆总结
+        document.getElementById('chatSettingsMemoryDelete')?.addEventListener('click', () => {
+            if (!currentChatSettingsContact) return;
+            if (!confirm('确定要删除最近一条记忆总结吗？')) return;
+            
+            const settings = getChatSettings(currentChatSettingsContact);
+            const memoryKey = currentMemoryType === 'online' ? 'onlineMemory' : 'offlineMemory';
+            const memory = settings[memoryKey] || '';
+            
+            // 按时间戳分割，删除最后一个条目
+            // 时间戳格式：[YYYY/MM/DD HH:mm:ss]
+            const entries = memory.split(/(?=\[\d{4}\/\d{1,2}\/\d{1,2}\s+\d{1,2}:\d{2}:\d{2}\])/);
+            if (entries.length > 0) {
+                // 过滤掉空条目
+                const nonEmptyEntries = entries.filter(e => e.trim());
+                if (nonEmptyEntries.length > 0) {
+                    nonEmptyEntries.pop(); // 删除最后一个
+                    settings[memoryKey] = nonEmptyEntries.join('');
+                    
+                    // 同时更新另一个（线上线下记忆互通）
+                    const otherKey = currentMemoryType === 'online' ? 'offlineMemory' : 'onlineMemory';
+                    settings[otherKey] = settings[memoryKey];
+                    
+                    saveChatSettings(currentChatSettingsContact, settings);
+                    updateMemoryContent(currentMemoryType, settings);
+                    alert('已删除最近一条记忆总结！');
+                }
+            }
+        });
+
+        // 清空所有记忆总结
+        document.getElementById('chatSettingsMemoryClear')?.addEventListener('click', () => {
+            if (!currentChatSettingsContact) return;
+            if (!confirm('确定要清空所有' + (currentMemoryType === 'online' ? '线上' : '线下') + '记忆总结吗？此操作不可恢复！')) return;
+            
+            const settings = getChatSettings(currentChatSettingsContact);
+            if (currentMemoryType === 'online') {
+                settings.onlineMemory = '';
+            } else {
+                settings.offlineMemory = '';
+            }
+            
+            // 同时清空另一个（线上线下记忆互通）
+            if (currentMemoryType === 'online') {
+                settings.offlineMemory = '';
+            } else {
+                settings.onlineMemory = '';
+            }
+            
+            saveChatSettings(currentChatSettingsContact, settings);
+            updateMemoryContent(currentMemoryType, settings);
+            alert('记忆总结已清空！');
         });
 
         // 自动总结开关
